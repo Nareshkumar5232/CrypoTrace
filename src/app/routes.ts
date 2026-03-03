@@ -9,6 +9,7 @@ import { TransactionView } from "./pages/TransactionView";
 import { AlertManagement } from "./pages/AlertManagement";
 import { AuditLogs } from "./pages/AuditLogs";
 import { UserAdmin } from "./pages/UserAdmin";
+import { SystemSettings } from "./pages/SystemSettings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
           { path: "alerts", Component: AlertManagement },
           { path: "audit-logs", Component: AuditLogs },
           { path: "users", Component: UserAdmin },
+          { path: "settings", Component: SystemSettings },
         ],
       }
     ],
