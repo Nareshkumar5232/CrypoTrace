@@ -1,0 +1,266 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  /* Government-Grade Intelligence Theme */
+  --background: #FFFFFF;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #0F1623;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+  --accent: #F1F5F9;
+  --accent-foreground: #0F172A;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --input-background: #FFFFFF;
+  --switch-background: #E2E8F0;
+  --font-weight-medium: 600;
+  --font-weight-normal: 400;
+  --ring: #0F1623;
+  --chart-1: #0F1623;
+  --chart-2: #8B5CF6;
+  --chart-3: #10B981;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+  --radius: 0.125rem;
+  --sidebar: #0F1623;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #FFFFFF;
+  --sidebar-primary-foreground: #0F1623;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1E293B;
+  --sidebar-ring: #FFFFFF;
+}
+
+.dark {
+  /* Dynamic Cyber-Intelligence Dark Theme */
+  --background: #090e17;
+  --foreground: #F1F5F9;
+  --card: #0F1623;
+  --card-foreground: #F1F5F9;
+  --popover: #0F1623;
+  --popover-foreground: #F1F5F9;
+  --primary: #00F4B9;
+  --primary-foreground: #0F1623;
+  --secondary: #1E293B;
+  --secondary-foreground: #F1F5F9;
+  --muted: #1A2235;
+  --muted-foreground: #94A3B8;
+  --accent: #1E293B;
+  --accent-foreground: #00F4B9;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #1E293B;
+  --input: #1E293B;
+  --input-background: #141b2c;
+  --switch-background: #1E293B;
+  --ring: #00F4B9;
+  --font-weight-medium: 600;
+  --font-weight-normal: 400;
+  --chart-1: #00F4B9;
+  --chart-2: #8B5CF6;
+  --chart-3: #10B981;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+  --sidebar: #0F1623;
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #00F4B9;
+  --sidebar-primary-foreground: #0F1623;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #00F4B9;
+  --sidebar-border: #1E293B;
+  --sidebar-ring: #00F4B9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* User Preferences Theme Support - overrides for explicit hardcoded classes when .dark context applies */
+.dark .bg-white {
+  background-color: #0F1623 !important;
+}
+
+.dark .bg-\[\#F8FAFC\] {
+  background-color: #141b2c !important;
+}
+
+.dark .bg-\[\#F1F5F9\] {
+  background-color: #1a2235 !important;
+}
+
+.dark .bg-\[\#FEF2F2\] {
+  background-color: #450a0a !important;
+  color: #fca5a5 !important;
+  border-color: #7f1d1d !important;
+}
+
+.dark .text-\[\#0F172A\] {
+  color: #F1F5F9 !important;
+}
+
+.dark .text-\[\#1E293B\] {
+  color: #F1F5F9 !important;
+}
+
+.dark .text-\[\#64748B\] {
+  color: #8B9BB4 !important;
+}
+
+.dark .text-\[\#0F1623\] {
+  color: #F1F5F9 !important;
+}
+
+.dark .text-\[\#7F1D1D\] {
+  color: #fca5a5 !important;
+}
+
+.dark .text-\[\#EF4444\] {
+  color: #f87171 !important;
+}
+
+.dark .border-\[\#E2E8F0\] {
+  border-color: #1E293B !important;
+}
+
+.dark .border-\[\#1E293B\] {
+  border-color: #1E293B !important;
+}
+
+.dark .border-\[\#EF4444\] {
+  border-color: #7f1d1d !important;
+}
+
+
+
+.dark .hover\:bg-\[\#F1F5F9\]:hover {
+  background-color: #1E293B !important;
+  color: #F1F5F9 !important;
+}
+
+.dark .hover\:bg-\[\#1E293B\]:hover {
+  background-color: #00d2a0 !important;
+  color: #0F1623 !important;
+}
+
+.dark table {
+  color: #E2E8F0 !important;
+}
+
+.dark input.bg-white,
+.dark input {
+  background-color: #0F1623 !important;
+  color: #F1F5F9 !important;
+}
+
+.dark .divide-\[\#E2E8F0\]> :not([hidden])~ :not([hidden]) {
+  border-color: #1E293B !important;
+}
