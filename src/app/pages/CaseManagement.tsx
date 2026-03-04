@@ -3,6 +3,145 @@ import { Briefcase, Plus, Filter, Wallet, ShieldAlert, FileText, ChevronRight, L
 import { TnLoader } from "../components/TnLoader";
 import { useCases, useUpdateCase, useCreateCase } from "../../hooks/useCases";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
+import { useAlerts } from "../../hooks/useAlerts";
+import { useTransactions } from "../../hooks/useTransactions";
+import { useAuditLogs } from "../../hooks/useAuditLogs";
+import { useWallets } from "../../hooks/useWallets";
+
+// ─── Timeline Types ────────────────────────────────────────────────────────────
+interface TimelineEvent {
+    type: string;
+    timestamp: string;
+    description: string;
+}
+
+// ─── buildTimeline ─────────────────────────────────────────────────────────────
+function buildTimeline(
+    caseData: any,
+    linkedWallets: any[],
+    alerts: any[],
+    transactions: any[],
+    notes: any[],
+    auditLogs: any[]
+): TimelineEvent[] {
+    const events: TimelineEvent[] = [];
+
+    // 1. Case Created
+    if (caseData?.created_at) {
+        events.push({
+            type: "Case Created",
+            timestamp: caseData.created_at,
+            description: `Investigation "${caseData.title || caseData.id}" was opened.`,
+        });
+    }
+
+    // 2. Wallet Linked
+    (linkedWallets || []).forEach((w: any) => {
+        const ts = w.added_at || w.created_at;
+        if (ts) {
+            events.push({
+                type: "Wallet Linked",
+                timestamp: ts,
+                description: `Wallet ${w.address || w.wallet_address || w.id} was linked to the case.`,
+            });
+        }
+    });
+
+    // 3. Suspicious Transaction Detected
+    (transactions || [])
+        .filter((tx: any) => tx.risk_flag === true || tx.risk_flag === "true" || tx.risk_flag === 1)
+        .forEach((tx: any) => {
+            const ts = tx.tx_timestamp || tx.timestamp || tx.created_at;
+            if (ts) {
+                events.push({
+                    type: "Suspicious Transaction Detected",
+                    timestamp: ts,
+                    description: `Flagged transaction ${tx.tx_hash || tx.id} — Amount: ${tx.amount ?? "N/A"}.`,
+                });
+            }
+        });
+
+    // 4. Alert Triggered
+    (alerts || []).forEach((a: any) => {
+        if (a.created_at) {
+            events.push({
+                type: "Alert Triggered",
+                timestamp: a.created_at,
+                description: `Alert "${a.title || a.type || a.id}" was triggered.`,
+            });
+        }
+    });
+
+    // 5. Alert Resolved
+    (alerts || []).forEach((a: any) => {
+        if (a.resolved_at) {
+            events.push({
+                type: "Alert Resolved",
+                timestamp: a.resolved_at,
+                description: `Alert "${a.title || a.type || a.id}" was resolved.`,
+            });
+        }
+    });
+
+    // 6. Risk Level Updated (audit logs containing "risk")
+    (auditLogs || [])
+        .filter((log: any) =>
+            typeof log.action === "string" && log.action.toLowerCase().includes("risk")
+        )
+        .forEach((log: any) => {
+            const ts = log.created_at || log.timestamp;
+            if (ts) {
+                events.push({
+                    type: "Risk Level Updated",
+                    timestamp: ts,
+                    description: `${log.action}${log.details ? ` — ${log.details}` : ""}.`,
+                });
+            }
+        });
+
+    // 7. Officer Note Added
+    (notes || []).forEach((n: any) => {
+        if (n.created_at) {
+            events.push({
+                type: "Officer Note Added",
+                timestamp: n.created_at,
+                description: n.content || n.note || n.text || "A note was recorded on this case.",
+            });
+        }
+    });
+
+    // Sort ascending by timestamp
+    events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    return events;
+}
+
+// ─── Small helper: format ISO timestamp ────────────────────────────────────────
+function fmtTimestamp(iso: string): string {
+    try {
+        return new Date(iso).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    } catch {
+        return iso;
+    }
+}
+
+// ─── Dot colour per event type ─────────────────────────────────────────────────
+const EVENT_DOT: Record<string, string> = {
+    "Case Created": "bg-[#0F1623]",
+    "Wallet Linked": "bg-[#3B82F6]",
+    "Suspicious Transaction Detected": "bg-[#EF4444]",
+    "Alert Triggered": "bg-[#F59E0B]",
+    "Alert Resolved": "bg-[#22C55E]",
+    "Risk Level Updated": "bg-[#8B5CF6]",
+    "Officer Note Added": "bg-[#64748B]",
+};
 
 export function CaseManagement() {
     const [selectedCase, setSelectedCase] = useState<string | null>(null);
@@ -10,6 +149,29 @@ export function CaseManagement() {
     const { data: cases, isLoading, isError } = useCases({ search: searchTerm });
     const { mutate: updateCase, isPending: isUpdating } = useUpdateCase();
     const { mutate: createCase, isPending: isCreating } = useCreateCase();
+
+    // ── Case-scoped data for Investigation Timeline (enabled only when a case is open) ──
+    const { data: caseAlerts } = useAlerts({ case_id: selectedCase, limit: 200 });
+    const { data: caseTransactions } = useTransactions({ case_id: selectedCase, limit: 200 });
+    const { data: caseAuditLogs } = useAuditLogs({ case_id: selectedCase, limit: 200 });
+    const { data: caseWallets } = useWallets({ case_id: selectedCase, limit: 200 });
+
+    // ── Build timeline whenever selected case data changes ───────────────────────
+    const selectedCaseItem = (cases || []).find((c: any) => c.id === selectedCase);
+    // Notes are embedded inside audit_logs with action type "note" OR as a separate array
+    const caseNotes = (caseAuditLogs || []).filter(
+        (log: any) => typeof log.action === "string" && log.action.toLowerCase().includes("note")
+    );
+    const timelineEvents = selectedCaseItem
+        ? buildTimeline(
+            selectedCaseItem,
+            caseWallets || [],
+            caseAlerts || [],
+            caseTransactions || [],
+            caseNotes,
+            caseAuditLogs || []
+        )
+        : [];
 
     const handleCreateCase = () => {
         const title = window.prompt("Enter new case title:");
@@ -118,7 +280,7 @@ export function CaseManagement() {
     );
 
     const renderCaseDetail = () => {
-        const caseItem = (cases || []).find((c: any) => c.id === selectedCase);
+        const caseItem = selectedCaseItem;
         if (!caseItem) return null;
 
         return (
@@ -210,6 +372,46 @@ export function CaseManagement() {
                         </div>
                     </TabsContent>
                 </Tabs>
+
+                {/* ── Investigation Timeline ─────────────────────────────── */}
+                <div className="bg-white border border-[#E2E8F0]">
+                    <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
+                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
+                            Investigation Timeline
+                        </h2>
+                    </div>
+                    <div className="px-4 py-4">
+                        {timelineEvents.length === 0 ? (
+                            <p className="text-xs text-[#64748B] uppercase tracking-wider text-center py-6">
+                                No timeline events available for this case.
+                            </p>
+                        ) : (
+                            <ol className="relative border-l border-[#E2E8F0] ml-2 space-y-0">
+                                {timelineEvents.map((event, idx) => (
+                                    <li key={idx} className="mb-4 ml-5">
+                                        {/* Connector dot */}
+                                        <span
+                                            className={`absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-white ${EVENT_DOT[event.type] ?? "bg-[#64748B]"
+                                                }`}
+                                        />
+                                        {/* Timestamp */}
+                                        <time className="block mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#64748B]">
+                                            {fmtTimestamp(event.timestamp)}
+                                        </time>
+                                        {/* Event type badge */}
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0F172A]">
+                                            {event.type}
+                                        </span>
+                                        {/* Description */}
+                                        <p className="mt-0.5 text-xs text-[#475569] leading-relaxed">
+                                            {event.description}
+                                        </p>
+                                    </li>
+                                ))}
+                            </ol>
+                        )}
+                    </div>
+                </div>
             </div>
         );
     };
