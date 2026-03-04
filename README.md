@@ -43,26 +43,6 @@ A production-grade cryptocurrency fund tracing intelligence platform built with 
 
 The application is ready to run. Simply start the development server to explore the platform.
 
-## Color Palette
-
-- **Background**: Deep Navy (#0B1120)
-- **Primary**: Electric Blue (#06B6D4)
-- **Cards**: Dark Navy (#141B2B)
-- **Accents**: Teal glow effects
-- **Risk Indicators**:
-  - High Risk: Red (#EF4444)
-  - Medium Risk: Yellow (#F59E0B)
-  - Low Risk: Green (#10B981)
-
-## Key Components
-
-- Fixed top navigation with case selector
-- Collapsible sidebar with smooth animations
-- Interactive Cytoscape graph with risk-based node coloring
-- Real-time progress tracking
-- Detailed intelligence panel with risk scoring
-- Multiple chart types (Bar, Line, Area, Pie)
-- Timeline view for investigation events
 
 ## Architecture
 
