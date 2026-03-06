@@ -15,24 +15,33 @@ export function Login() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <div className="w-full max-w-md space-y-8">
+        <div className="relative flex min-h-screen items-center justify-center p-4">
+            {/* Full-screen background image */}
+            <div
+                className="fixed inset-0 z-0 bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${tamilNaduLogo})`, backgroundSize: '90% auto' }}
+            />
+            {/* Blur overlay */}
+            <div className="fixed inset-0 z-0 backdrop-blur-[10px] bg-white/40 dark:bg-slate-900/50" />
+
+            {/* Login card */}
+            <div className="relative z-10 w-full max-w-md space-y-8">
                 <div className="flex flex-col items-center justify-center space-y-2 text-center">
                     <div className="mb-4 flex h-24 w-24 items-center justify-center">
-                        <img src={tamilNaduLogo} alt="Tamil Nadu State Emblem" className="h-full w-full object-contain" />
+                        <img src={tamilNaduLogo} alt="Tamil Nadu State Emblem" className="h-full w-full object-contain drop-shadow-lg" />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] uppercase">
-                        CRYPTO INTELLIGENCE SYSTEM
+                    <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white uppercase leading-snug">
+                        Cryptocurrency Investigation<br/>&amp; Fund Tracing System
                     </h1>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
-                        Department of Digital Asset Security
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] dark:text-[#94A3B8]">
+                        Authorized Access for Law Enforcement
                     </p>
                 </div>
 
-                <div className="bg-white border border-[#E2E8F0] p-6 shadow-sm">
-                    <div className="mb-6 border-b border-[#E2E8F0] pb-4">
-                        <h2 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider">Authorized Access Only</h2>
-                        <p className="text-[10px] font-semibold text-[#64748B] uppercase tracking-wider mt-1">
+                <div className="login-glass-card p-8">
+                    <div className="mb-6 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+                        <h2 className="text-sm font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Authorized Access Only</h2>
+                        <p className="text-[10px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider mt-1">
                             Enter your credentials to access the system.
                         </p>
                     </div>
@@ -40,7 +49,7 @@ export function Login() {
                         <div className="space-y-2">
                             <label
                                 htmlFor="employeeId"
-                                className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]"
+                                className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623] dark:text-[#E5E7EB]"
                             >
                                 Employee ID
                             </label>
@@ -50,14 +59,14 @@ export function Login() {
                                 required
                                 value={employeeId}
                                 onChange={(e) => setEmployeeId(e.target.value)}
-                                className="flex h-10 w-full rounded border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                                className="flex h-10 w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white/80 dark:bg-slate-800/60 px-3 py-2 text-sm text-[#0F172A] dark:text-white placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-colors"
                                 placeholder="e.g. ID-0001"
                             />
                         </div>
                         <div className="space-y-2">
                             <label
                                 htmlFor="password"
-                                className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]"
+                                className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623] dark:text-[#E5E7EB]"
                             >
                                 Password
                             </label>
@@ -67,13 +76,13 @@ export function Login() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="flex h-10 w-full rounded border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                                className="flex h-10 w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white/80 dark:bg-slate-800/60 px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-colors"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={isPending || !employeeId || !password}
-                            className="inline-flex h-10 w-full items-center justify-center rounded border border-[#0F1623] bg-[#0F1623] px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-[#0F1623] bg-[#0F1623] px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             AUTHENTICATE
@@ -81,7 +90,7 @@ export function Login() {
                     </form>
                 </div>
 
-                <div className="border border-[#EF4444] bg-[#FEF2F2] p-4 text-[#7F1D1D]">
+                <div className="login-glass-card !bg-red-50/80 dark:!bg-red-950/30 border border-[#EF4444]/30 p-4 text-[#7F1D1D] dark:text-red-300">
                     <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider">
                         WARNING: RESTRICTED GOVERNMENT SYSTEM
                     </h3>

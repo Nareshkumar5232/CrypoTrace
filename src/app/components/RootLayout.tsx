@@ -1,15 +1,12 @@
 import { Outlet } from "react-router";
 import { Header } from "./Header";
-import { Sidebar } from "./Sidebar";
 import { useState, useEffect } from "react";
 import tnLogo from "../../Tamil_Nadu_State.webp";
 
 export function RootLayout() {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [showSplash, setShowSplash] = useState(true);
 
     useEffect(() => {
-        // Show splash for a brief moment to transition from login to main dashboard
         const timer = setTimeout(() => setShowSplash(false), 2000);
         return () => clearTimeout(timer);
     }, []);
@@ -27,20 +24,11 @@ export function RootLayout() {
     return (
         <div className="min-h-screen bg-background">
             <Header />
-            <div className="flex pt-16">
-                <Sidebar
-                    collapsed={sidebarCollapsed}
-                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                />
-                <main
-                    className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-[270px]'
-                        }`}
-                >
-                    <div className="p-8">
-                        <Outlet />
-                    </div>
-                </main>
-            </div>
+            <main className="pt-16">
+                <div className="p-8 max-w-[1920px] mx-auto">
+                    <Outlet />
+                </div>
+            </main>
         </div>
     );
 }
