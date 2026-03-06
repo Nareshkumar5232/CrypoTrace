@@ -1,9 +1,11 @@
-import { Briefcase, Wallet, ShieldAlert, FileText, Loader2, TrendingUp, TrendingDown, Plus, Search as SearchIcon, AlertTriangle, RefreshCw, Clock, User, Activity, PieChart as PieIcon, ChevronDown } from "lucide-react";
+import { Briefcase, Wallet, ShieldAlert, FileText, Loader2, TrendingUp, TrendingDown, Plus, Search as SearchIcon, AlertTriangle, RefreshCw, Clock, User, Activity, PieChart as PieIcon, ChevronDown, Crosshair } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useDashboardMetrics } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router";
 import { useState, useCallback } from "react";
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Sector } from "recharts";
+import { useInvestigationStore } from "../../store/investigationStore";
+import { toast } from "sonner";
 
 /* ─── Realistic chart datasets ─── */
 const activityDataSets: Record<string, { label: string; data: { label: string; flagged: number; total: number }[] }> = {
@@ -70,13 +72,12 @@ function ChartTooltip({ active, payload, label }: any) {
     );
 }
 
-/* ─── Donut active shape with hover expansion ─── */
+/* ─── Donut active shape - flat style ─── */
 function ActiveDonutSlice(props: any) {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
     return (
         <g>
-            <Sector cx={cx} cy={cy} innerRadius={innerRadius - 2} outerRadius={outerRadius + 6} startAngle={startAngle} endAngle={endAngle} fill={fill} style={{ filter: `drop-shadow(0 0 8px ${fill}40)`, transition: "all 300ms ease" }} />
-            <Sector cx={cx} cy={cy} innerRadius={outerRadius + 8} outerRadius={outerRadius + 10} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.3} />
+            <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 4} startAngle={startAngle} endAngle={endAngle} fill={fill} />
         </g>
     );
 }
@@ -128,6 +129,16 @@ function formatTimeAgo(time: string) {
 export function Dashboard() {
     const { data, isLoading, isError, error, refetch } = useDashboardMetrics();
     const navigate = useNavigate();
+    const { startInvestigation, isTracing } = useInvestigationStore();
+    const [walletInput, setWalletInput] = useState("");
+
+    const handleStartInvestigation = async () => {
+        const addr = walletInput.trim();
+        if (!addr) { toast.error("Please enter a wallet address."); return; }
+        if (addr.length < 10) { toast.error("Please enter a valid wallet address."); return; }
+        startInvestigation(addr);
+        navigate(`/investigation/${encodeURIComponent(addr)}`);
+    };
 
     const kpiData = [
         {
@@ -190,6 +201,40 @@ export function Dashboard() {
                     </button>
                     <button onClick={() => navigate("/audit-logs")} className="dash-btn-secondary">
                         <FileText className="h-4 w-4" /> Reports
+                    </button>
+                </div>
+            </div>
+
+            {/* ── Suspicious Wallet Investigation Entry ── */}
+            <div className="dash-card !p-0 overflow-hidden">
+                <div className="flex items-center gap-3 px-6 pt-5 pb-2">
+                    <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center">
+                        <Crosshair className="h-4.5 w-4.5 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-foreground">Start New Investigation</h3>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">Enter a suspicious wallet address to begin tracing fund movements</p>
+                    </div>
+                </div>
+                <div className="px-6 pb-5 pt-3 flex items-center gap-3">
+                    <div className="relative flex-1">
+                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <input
+                            type="text"
+                            value={walletInput}
+                            onChange={(e) => setWalletInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleStartInvestigation()}
+                            placeholder="Enter wallet address (e.g. 0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18)"
+                            className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-navbar-accent"
+                        />
+                    </div>
+                    <button
+                        onClick={handleStartInvestigation}
+                        disabled={isTracing || !walletInput.trim()}
+                        className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#0F1623] px-5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                        {isTracing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                        Start Investigation
                     </button>
                 </div>
             </div>
@@ -385,7 +430,11 @@ export function Dashboard() {
                                 </tr>
                             )}
                             {!isLoading && recentCases.map((c: any) => (
-                                <tr key={c.id} className="hover:bg-muted/30 transition-colors">
+                                <tr
+                                    key={c.id}
+                                    className="hover:bg-muted/30 transition-colors cursor-pointer"
+                                    onClick={() => navigate(`/investigation/${encodeURIComponent(c.id)}`)}
+                                >
                                     <td className="px-6 py-3.5 font-mono text-xs text-muted-foreground">{c.id}</td>
                                     <td className="px-6 py-3.5 text-sm font-medium text-foreground">{c.title}</td>
                                     <td className="px-6 py-3.5"><StatusBadge status={c.status} /></td>

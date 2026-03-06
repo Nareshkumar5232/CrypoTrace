@@ -2,13 +2,8 @@ import { useState } from "react";
 import { Filter, Search, ChevronRight, Network, Wallet, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useClusters, useCluster, useUpdateCluster } from "../../hooks/useClusters";
-
-// Mock data fallback for cluster wallets relationship that is usually complex to join
-const mockClusterWallets = [
-    { address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", associatedDate: "2026-01-15", role: "Primary Hub" },
-    { address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", associatedDate: "2026-02-01", role: "Receiver" },
-    { address: "bc1q9v...", associatedDate: "2026-02-28", role: "Intermediary" },
-];
+import { useWallets } from "../../hooks/useWallets";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 
 export function WalletClusters() {
     const [selectedClusterId, setSelectedClusterId] = useState<string | null>(null);
@@ -16,13 +11,26 @@ export function WalletClusters() {
     const { data: clusters, isLoading: isClustersLoading, isError: isClustersError } = useClusters({ search: searchTerm });
     const { data: clusterDetail, isLoading: isDetailLoading } = useCluster(selectedClusterId);
     const { mutate: updateCluster, isPending: isUpdating } = useUpdateCluster();
+    const { data: allWallets } = useWallets({});
+    const [showRiskModal, setShowRiskModal] = useState(false);
+    const [riskChoice, setRiskChoice] = useState('');
+    const [showCriticalOnly, setShowCriticalOnly] = useState(false);
+
+    // Wallets belonging to the selected cluster
+    const clusterWallets = selectedClusterId
+        ? (allWallets || []).filter((w: any) => w.cluster_id === selectedClusterId || w.clusterId === selectedClusterId)
+        : [];
+
+    const filteredClusters = (clusters || []).filter((c: any) => {
+        if (showCriticalOnly) return (c.risk_level === 'Critical' || c.riskLevel === 'Critical');
+        return true;
+    });
 
     const handleUpdateRisk = () => {
-        if (!selectedClusterId) return;
-        const newLevel = window.prompt("Enter new risk level (Low, Medium, High, Critical):");
-        if (newLevel && ['Low', 'Medium', 'High', 'Critical'].includes(newLevel)) {
-            updateCluster({ id: selectedClusterId, updates: { risk_level: newLevel } });
-        }
+        if (!selectedClusterId || !riskChoice) return;
+        updateCluster({ id: selectedClusterId, updates: { risk_level: riskChoice } });
+        setShowRiskModal(false);
+        setRiskChoice('');
     };
 
     const renderClusterList = () => (
@@ -40,9 +48,14 @@ export function WalletClusters() {
                             className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
                         />
                     </div>
-                    <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
+                    <button
+                        onClick={() => setShowCriticalOnly(!showCriticalOnly)}
+                        className={`inline-flex items-center justify-center rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${showCriticalOnly
+                            ? 'bg-[#0F1623] text-white border-[#0F1623]'
+                            : 'border-[#E2E8F0] bg-white text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white'
+                            }`}>
                         <Filter className="mr-1.5 h-3 w-3" />
-                        Filter
+                        {showCriticalOnly ? 'Critical Only' : 'Filter'}
                     </button>
                 </div>
             </div>
@@ -73,14 +86,14 @@ export function WalletClusters() {
                                 </td>
                             </tr>
                         )}
-                        {!isClustersLoading && (!clusters || clusters.length === 0) && (
+                        {!isClustersLoading && filteredClusters.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-3 py-6 text-center text-xs text-[#64748B] uppercase tracking-wider font-bold">
                                     NO REGISTRY CLUSTERS FOUND
                                 </td>
                             </tr>
                         )}
-                        {!isClustersLoading && (clusters || []).map((cluster: any) => (
+                        {!isClustersLoading && filteredClusters.map((cluster: any) => (
                             <tr key={cluster.id}>
                                 <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{cluster.id || cluster.cluster_id}</td>
                                 <td className="px-3 py-1.5">
@@ -140,7 +153,7 @@ export function WalletClusters() {
                         </div>
                         <div className="flex gap-2">
                             <button
-                                onClick={handleUpdateRisk}
+                                onClick={() => { setRiskChoice(cluster.risk_level || cluster.riskLevel || 'Low'); setShowRiskModal(true); }}
                                 disabled={isUpdating}
                                 className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors disabled:opacity-50"
                             >
@@ -186,11 +199,14 @@ export function WalletClusters() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E2E8F0]">
-                                {mockClusterWallets.map((w, index) => (
-                                    <tr key={index}>
-                                        <td className="px-3 py-1.5 font-mono text-xs text-[#0F172A]">{w.address}</td>
-                                        <td className="px-3 py-1.5 text-xs text-[#0F172A]">{w.role}</td>
-                                        <td className="px-3 py-1.5 text-xs text-[#64748B]">{w.associatedDate}</td>
+                                {clusterWallets.length === 0 && (
+                                    <tr><td colSpan={3} className="px-3 py-6 text-center text-xs text-[#64748B] uppercase tracking-wider font-bold">No linked entities found</td></tr>
+                                )}
+                                {clusterWallets.map((w: any, index: number) => (
+                                    <tr key={w.id || index}>
+                                        <td className="px-3 py-1.5 font-mono text-xs text-[#0F172A]">{w.address || w.id}</td>
+                                        <td className="px-3 py-1.5 text-xs text-[#0F172A]">{w.role || w.label || 'Entity'}</td>
+                                        <td className="px-3 py-1.5 text-xs text-[#64748B]">{w.first_seen || w.created_at || '-'}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -215,6 +231,31 @@ export function WalletClusters() {
             )}
 
             {selectedClusterId ? renderClusterDetail() : renderClusterList()}
+
+            {/* Risk Level Update Dialog */}
+            <Dialog open={showRiskModal} onOpenChange={setShowRiskModal}>
+                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Update Cluster Risk Level</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <select
+                            value={riskChoice}
+                            onChange={(e) => setRiskChoice(e.target.value)}
+                            className="w-full rounded border border-[#E2E8F0] px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#0F1623]"
+                        >
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                        <div className="flex justify-end gap-2 pt-2">
+                            <button onClick={() => setShowRiskModal(false)} className="rounded border border-[#E2E8F0] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:bg-[#F1F5F9]">Cancel</button>
+                            <button onClick={handleUpdateRisk} className="rounded bg-[#0F1623] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B]">Update</button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

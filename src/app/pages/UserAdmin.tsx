@@ -1,22 +1,42 @@
 import { useState } from "react";
 import { Filter, Search, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
-import { useUsers, useUpdateUser } from "../../hooks/useUsers";
+import { useUsers, useCreateUser, useToggleUserStatus } from "../../hooks/useUsers";
 import { useRoles } from "../../hooks/useRoles";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogClose } from "../components/ui/dialog";
+import { toast } from "sonner";
 
 export function UserAdmin() {
     const [searchTerm, setSearchTerm] = useState("");
     const { data: users, isLoading: usersLoading, isError: usersError } = useUsers({ search: searchTerm });
     const { data: roles, isLoading: rolesLoading } = useRoles();
-    const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
+    const { mutate: createUser, isPending: isCreating } = useCreateUser();
+    const { mutate: toggleStatus, isPending: isToggling } = useToggleUserStatus();
 
-    const handleToggleStatus = (id: string, currentStatus: string) => {
-        const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-        const action = newStatus === 'Active' ? 'ACTIVATE' : 'DEACTIVATE';
-        if (window.confirm(`Are you sure you want to ${action} this personnel record?`)) {
-            updateUser({ id, updates: { status: newStatus } });
-        }
+    // Add user form state
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [newDept, setNewDept] = useState('');
+    const [newRole, setNewRole] = useState('Analyst');
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+    // Confirm toggle dialog
+    const [confirmToggle, setConfirmToggle] = useState<{ id: string; status: string } | null>(null);
+
+    const handleAddUser = () => {
+        const errors: Record<string, string> = {};
+        if (!newName.trim()) errors.name = 'Name is required';
+        if (!newDept.trim()) errors.dept = 'Department is required';
+        if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+        createUser({ name: newName.trim(), department: newDept.trim(), role: newRole, status: 'Active' });
+        setShowAddModal(false);
+        setNewName(''); setNewDept(''); setNewRole('Analyst'); setFormErrors({});
+    };
+
+    const handleConfirmToggle = () => {
+        if (!confirmToggle) return;
+        toggleStatus(confirmToggle.id);
+        setConfirmToggle(null);
     };
     return (
         <div className="space-y-6">
@@ -89,37 +109,43 @@ export function UserAdmin() {
                                     <Filter className="mr-1.5 h-3 w-3" />
                                     Filter
                                 </button>
-                                <Dialog>
+                                <Dialog open={showAddModal} onOpenChange={(open) => { setShowAddModal(open); if (!open) setFormErrors({}); }}>
                                     <DialogTrigger asChild>
-                                        <button className="inline-flex items-center justify-center rounded border border-[#0F1623] bg-[#0F1623] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors">
+                                        <button onClick={() => setShowAddModal(true)} className="inline-flex items-center justify-center rounded border border-[#0F1623] bg-[#0F1623] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors">
                                             ADD USER
                                         </button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
+                                    <DialogContent className="sm:max-w-[425px] bg-white border border-[#E2E8F0]">
                                         <DialogHeader>
-                                            <DialogTitle>Add New Personnel</DialogTitle>
+                                            <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Add New Personnel</DialogTitle>
                                         </DialogHeader>
                                         <div className="grid gap-4 py-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Name</label>
-                                                <input className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]" placeholder="J. Doe" />
+                                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Name *</label>
+                                                <input value={newName} onChange={(e) => { setNewName(e.target.value); setFormErrors(prev => ({ ...prev, name: '' })); }} className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]" placeholder="J. Doe" />
+                                                {formErrors.name && <p className="text-[10px] text-[#EF4444]">{formErrors.name}</p>}
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Department</label>
-                                                <input className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]" placeholder="Intelligence" />
+                                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Department *</label>
+                                                <input value={newDept} onChange={(e) => { setNewDept(e.target.value); setFormErrors(prev => ({ ...prev, dept: '' })); }} className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]" placeholder="Intelligence" />
+                                                {formErrors.dept && <p className="text-[10px] text-[#EF4444]">{formErrors.dept}</p>}
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Role</label>
+                                                <select value={newRole} onChange={(e) => setNewRole(e.target.value)} className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]">
+                                                    {(roles || []).map((r: any) => <option key={r.id} value={r.name}>{r.name}</option>)}
+                                                    {(!roles || roles.length === 0) && <option>Analyst</option>}
+                                                </select>
                                             </div>
                                         </div>
                                         <div className="flex justify-end gap-2">
-                                            <DialogClose asChild>
-                                                <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
-                                                    CANCEL
-                                                </button>
-                                            </DialogClose>
-                                            <DialogClose asChild>
-                                                <button className="inline-flex items-center justify-center rounded border border-[#0F1623] bg-[#0F1623] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors">
-                                                    SUBMIT
-                                                </button>
-                                            </DialogClose>
+                                            <button onClick={() => { setShowAddModal(false); setFormErrors({}); }} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9]">
+                                                CANCEL
+                                            </button>
+                                            <button onClick={handleAddUser} disabled={isCreating} className="inline-flex items-center justify-center rounded border border-[#0F1623] bg-[#0F1623] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] disabled:opacity-50">
+                                                {isCreating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
+                                                SUBMIT
+                                            </button>
                                         </div>
                                     </DialogContent>
                                 </Dialog>
@@ -172,19 +198,19 @@ export function UserAdmin() {
                                                 </span>
                                             </td>
                                             <td className="px-3 py-1.5 text-right">
-                                                <button className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:text-[#0F172A] mr-3">EDIT</button>
+                                                <button onClick={() => toast.info(`Edit mode for ${user.name} — coming soon.`)} className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:text-[#0F172A] mr-3">EDIT</button>
                                                 {user.status === 'Active' ? (
                                                     <button
-                                                        onClick={() => handleToggleStatus(user.id, user.status)}
-                                                        disabled={isUpdating}
+                                                        onClick={() => setConfirmToggle({ id: user.id, status: user.status })}
+                                                        disabled={isToggling}
                                                         className="text-[10px] font-bold uppercase tracking-wider text-[#EF4444] hover:text-[#B91C1C] disabled:opacity-50"
                                                     >
                                                         DEACTIVATE
                                                     </button>
                                                 ) : (
                                                     <button
-                                                        onClick={() => handleToggleStatus(user.id, user.status)}
-                                                        disabled={isUpdating}
+                                                        onClick={() => setConfirmToggle({ id: user.id, status: user.status })}
+                                                        disabled={isToggling}
                                                         className="text-[10px] font-bold uppercase tracking-wider text-[#10B981] hover:text-[#047857] disabled:opacity-50"
                                                     >
                                                         ACTIVATE
@@ -199,6 +225,26 @@ export function UserAdmin() {
                     </div>
                 </div>
             </div>
+
+            {/* Toggle Status Confirmation Dialog */}
+            <Dialog open={!!confirmToggle} onOpenChange={(open) => { if (!open) setConfirmToggle(null); }}>
+                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
+                            Confirm {confirmToggle?.status === 'Active' ? 'Deactivation' : 'Activation'}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-[#64748B] py-2">
+                        Are you sure you want to {confirmToggle?.status === 'Active' ? 'DEACTIVATE' : 'ACTIVATE'} this personnel record?
+                    </p>
+                    <div className="flex justify-end gap-2 pt-2">
+                        <button onClick={() => setConfirmToggle(null)} className="rounded border border-[#E2E8F0] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:bg-[#F1F5F9]">Cancel</button>
+                        <button onClick={handleConfirmToggle} className={`rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white ${confirmToggle?.status === 'Active' ? 'bg-[#EF4444] hover:bg-[#B91C1C]' : 'bg-[#10B981] hover:bg-[#047857]'}`}>
+                            {confirmToggle?.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

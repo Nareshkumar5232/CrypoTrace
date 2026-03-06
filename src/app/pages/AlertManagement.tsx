@@ -1,19 +1,32 @@
 import { useState } from "react";
 import { Filter, Search, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
-import { useAlerts, useUpdateAlert } from "../../hooks/useAlerts";
+import { useAlerts, useResolveAlert, useEscalateAlert } from "../../hooks/useAlerts";
 import { Switch } from "../components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 
 export function AlertManagement() {
     const [searchTerm, setSearchTerm] = useState("");
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [severityFilter, setSeverityFilter] = useState<string>("All");
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [confirmResolve, setConfirmResolve] = useState<string | null>(null);
     const { data: alerts, isLoading, isError } = useAlerts({ search: searchTerm });
-    const { mutate: updateAlert, isPending: isUpdating } = useUpdateAlert();
+    const { mutate: resolveAlert, isPending: isResolving } = useResolveAlert();
+    const { mutate: escalateAlert, isPending: isEscalating } = useEscalateAlert();
+
+    const filteredAlerts = (alerts || []).filter((a: any) => {
+        if (severityFilter !== 'All' && a.severity !== severityFilter) return false;
+        if (searchTerm) {
+            const q = searchTerm.toLowerCase();
+            if (!a.id?.toLowerCase().includes(q) && !a.description?.toLowerCase().includes(q) && !(a.walletId || a.wallet_id || '').toLowerCase().includes(q)) return false;
+        }
+        return true;
+    });
 
     const handleResolve = (id: string) => {
-        if (window.confirm("Are you sure you want to flag this intelligence notification as RESOLVED?")) {
-            updateAlert({ id, updates: { status: 'Resolved', resolved_at: new Date().toISOString() } });
-        }
+        resolveAlert(id);
+        setConfirmResolve(null);
     };
 
     return (
@@ -47,10 +60,20 @@ export function AlertManagement() {
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[#0F172A]">Auto-Refresh</span>
                             <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
                         </div>
-                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
+                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors"
+                            onClick={() => setShowFilterMenu(!showFilterMenu)}>
                             <Filter className="mr-1.5 h-3 w-3" />
-                            Filter
+                            {severityFilter === 'All' ? 'Filter' : severityFilter}
                         </button>
+                        {showFilterMenu && (
+                            <div className="absolute right-0 top-full mt-1 z-20 w-36 bg-white dark:bg-[#111111] border border-[#E5E7EB] dark:border-[#1F1F1F] rounded">
+                                {['All', 'Critical', 'High', 'Medium', 'Low'].map((s) => (
+                                    <button key={s} onClick={() => { setSeverityFilter(s); setShowFilterMenu(false); }}
+                                        className={`block w-full text-left px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider hover:bg-[#F1F5F9] ${severityFilter === s ? 'text-[#0F1623] bg-[#F1F5F9]' : 'text-[#64748B]'}`}
+                                    >{s}</button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -89,7 +112,7 @@ export function AlertManagement() {
                                     </td>
                                 </tr>
                             )}
-                            {!isLoading && (alerts || []).map((alert: any) => (
+                            {!isLoading && (filteredAlerts || []).map((alert: any) => (
                                 <tr key={alert.id}>
                                     <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{alert.id}</td>
                                     <td className="px-3 py-1.5">
@@ -113,6 +136,7 @@ export function AlertManagement() {
                                     <td className="px-3 py-1.5 text-xs text-[#0F172A]">{alert.timestamp || alert.created_at}</td>
                                     <td className="px-3 py-1.5">
                                         <span className={`inline-flex items-center text-[10px] font-bold uppercase tracking-wider ${(alert.status || '').toUpperCase() === 'RESOLVED' ? 'text-[#10B981]' :
+                                            (alert.status || '').toUpperCase() === 'ESCALATED' ? 'text-[#EF4444]' :
                                             (alert.status || '').toUpperCase() === 'IN REVIEW' ? 'text-[#F59E0B]' :
                                                 'text-[#0F1623] '
                                             }`}>
@@ -122,10 +146,14 @@ export function AlertManagement() {
                                     <td className="px-3 py-1.5 text-right">
                                         {(alert.status || '').toUpperCase() !== 'RESOLVED' && (
                                             <div className="flex justify-end gap-3">
-                                                <button className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:text-[#0F172A]">ESCALATE</button>
                                                 <button
-                                                    onClick={() => handleResolve(alert.id)}
-                                                    disabled={isUpdating}
+                                                    onClick={() => escalateAlert(alert.id)}
+                                                    disabled={isEscalating || alert.status === 'Escalated'}
+                                                    className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:text-[#0F172A] disabled:opacity-50"
+                                                >ESCALATE</button>
+                                                <button
+                                                    onClick={() => setConfirmResolve(alert.id)}
+                                                    disabled={isResolving}
                                                     className="text-[10px] font-bold uppercase tracking-wider text-[#10B981] hover:text-[#047857] disabled:opacity-50"
                                                 >
                                                     RESOLVE
@@ -139,6 +167,28 @@ export function AlertManagement() {
                     </table>
                 </div>
             </div>
+
+            {/* ── Resolve Confirmation Modal ─────────────────────── */}
+            <Dialog open={!!confirmResolve} onOpenChange={() => setConfirmResolve(null)}>
+                <DialogContent className="sm:max-w-[400px]">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Resolution</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-[#64748B] py-4">
+                        Are you sure you want to mark <span className="font-mono font-bold text-[#0F172A]">{confirmResolve}</span> as RESOLVED?
+                    </p>
+                    <div className="flex justify-end gap-2">
+                        <button onClick={() => setConfirmResolve(null)}
+                            className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] transition-colors">
+                            Cancel
+                        </button>
+                        <button onClick={() => confirmResolve && handleResolve(confirmResolve)}
+                            className="inline-flex items-center justify-center rounded bg-[#10B981] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#047857] transition-colors">
+                            Resolve
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

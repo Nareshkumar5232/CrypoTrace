@@ -1,12 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 
-export const useTransactions = (filters: any) => {
-    return useQuery({
-        queryKey: ['transactions', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/transactions', { params: filters });
-            return data;
-        },
-    });
+export const useTransactions = (_filters?: any) => {
+    const transactions = useAppStore((s) => s.transactions);
+    return { data: transactions, isLoading: false, isError: false };
 };

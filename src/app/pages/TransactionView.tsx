@@ -3,11 +3,36 @@ import { Filter, Search, ArrowDownRight, ArrowUpRight, Download, Loader2, Chevro
 import { TnLoader } from "../components/TnLoader";
 import { useTransactions } from "../../hooks/useTransactions";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export function TransactionView() {
     const [searchTerm, setSearchTerm] = useState("");
     const { data: transactions, isLoading, isError } = useTransactions({ search: searchTerm });
     const navigate = useNavigate();
+    const [riskFilter, setRiskFilter] = useState<string>('All');
+
+    const filteredTx = (transactions || []).filter((tx: any) => {
+        if (riskFilter === 'All') return true;
+        return (tx.risk || tx.risk_level) === riskFilter;
+    });
+
+    const handleExportCSV = () => {
+        const rows = filteredTx.map((tx: any) => [
+            tx.id, tx.date || tx.timestamp, tx.type || tx.direction,
+            tx.source, tx.destination, tx.amount, tx.asset || 'BTC',
+            tx.risk || tx.risk_level || 'Unknown', tx.caseId || tx.case_id || '-'
+        ]);
+        const header = ['TX ID', 'Date', 'Direction', 'Source', 'Destination', 'Amount', 'Asset', 'Risk', 'Linked Case'];
+        const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transactions_export.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success(`Exported ${filteredTx.length} transactions to CSV.`);
+    };
 
     return (
         <div className="space-y-6">
@@ -43,11 +68,20 @@ export function TransactionView() {
                                 className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
                             />
                         </div>
-                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
-                            <Filter className="mr-1.5 h-3 w-3" />
-                            Filter
-                        </button>
-                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
+                        <div className="relative">
+                            <select
+                                value={riskFilter}
+                                onChange={(e) => setRiskFilter(e.target.value)}
+                                className="h-7 rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] focus:outline-none focus:border-[#0F1623]"
+                            >
+                                <option value="All">All Risks</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <button onClick={handleExportCSV} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
                             <Download className="mr-1.5 h-3 w-3" />
                             Export CSV
                         </button>
@@ -82,14 +116,14 @@ export function TransactionView() {
                                     </td>
                                 </tr>
                             )}
-                            {!isLoading && (!transactions || transactions.length === 0) && (
+                            {!isLoading && filteredTx.length === 0 && (
                                 <tr>
                                     <td colSpan={8} className="px-3 py-6 text-center text-xs text-[#64748B] uppercase tracking-wider font-bold">
                                         NO REGISTRY TRANSACTIONS FOUND
                                     </td>
                                 </tr>
                             )}
-                            {!isLoading && (transactions || []).map((tx: any) => (
+                            {!isLoading && filteredTx.map((tx: any) => (
                                 <tr key={tx.id}>
                                     <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{tx.id || tx.tx_hash}</td>
                                     <td className="px-3 py-1.5 text-xs text-[#0F172A]">{tx.date || tx.timestamp || tx.created_at}</td>

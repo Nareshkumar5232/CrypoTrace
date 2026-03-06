@@ -1,12 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 
 export const useRoles = () => {
-    return useQuery({
-        queryKey: ['roles'],
-        queryFn: async () => {
-            const { data } = await api.get('/roles');
-            return data;
-        },
-    });
+    const roles = useAppStore((s) => s.roles);
+    return { data: roles, isLoading: false };
 };

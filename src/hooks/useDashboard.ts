@@ -1,12 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 
 export const useDashboardMetrics = () => {
-    return useQuery({
-        queryKey: ['dashboard', 'metrics'],
-        queryFn: async () => {
-            const { data } = await api.get('/metrics/dashboard');
-            return data;
-        },
-    });
+    const dashboard = useAppStore((s) => s.dashboard);
+    return { data: dashboard, isLoading: false, isError: false, error: null, refetch: () => {} };
 };

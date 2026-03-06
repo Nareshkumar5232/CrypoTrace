@@ -11,6 +11,7 @@ import { AuditLogs } from "./pages/AuditLogs";
 import { UserAdmin } from "./pages/UserAdmin";
 import { SystemSettings } from "./pages/SystemSettings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { InvestigationAnalysis } from "./pages/InvestigationAnalysis";
 
 export const router = createBrowserRouter([
   { path: "/login", Component: Login },
@@ -31,6 +32,11 @@ export const router = createBrowserRouter([
           { path: "audit-logs", Component: AuditLogs },
           { path: "users", Component: UserAdmin },
           { path: "settings", Component: SystemSettings },
+          { path: "investigation", Component: InvestigationAnalysis },
+          { path: "investigate", Component: InvestigationAnalysis },
+          { path: "investigation/:id", Component: InvestigationAnalysis },
+          { path: "investigate/:id", Component: InvestigationAnalysis },
+          { path: "case/:caseId", Component: InvestigationAnalysis },
         ],
       }
     ],
