@@ -31,15 +31,29 @@
   --chart-3: #10B981;
   --chart-4: #F59E0B;
   --chart-5: #EF4444;
-  --radius: 0.125rem;
-  --sidebar: #0F1623;
-  --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #FFFFFF;
-  --sidebar-primary-foreground: #0F1623;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #1E293B;
-  --sidebar-ring: #FFFFFF;
+  --radius: 0.625rem;
+  /* Light Theme Sidebar - Clean institutional look */
+  --sidebar: #F4F6F8;
+  --sidebar-foreground: #1F2933;
+  --sidebar-primary: #0B63CE;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E6EEF8;
+  --sidebar-accent-foreground: #0B63CE;
+  --sidebar-border: #E1E5EA;
+  --sidebar-ring: #0B63CE;
+  --sidebar-hover: #EEF2F6;
+  --sidebar-active: #E6EEF8;
+  --sidebar-active-foreground: #0B63CE;
+  --sidebar-active-border: #0B63CE;
+  --sidebar-muted: #64748B;
+  /* Light Theme Navbar - Clean institutional look */
+  --navbar: #F4F6F8;
+  --navbar-foreground: #1F2933;
+  --navbar-border: #E1E5EA;
+  --navbar-muted: #64748B;
+  --navbar-hover: #EEF2F6;
+  --navbar-accent: #0B63CE;
+  --navbar-accent-glow: rgba(11, 99, 206, 0.3);
 }
 
 .dark {
@@ -72,14 +86,28 @@
   --chart-3: #10B981;
   --chart-4: #F59E0B;
   --chart-5: #EF4444;
-  --sidebar: #0F1623;
-  --sidebar-foreground: #F1F5F9;
-  --sidebar-primary: #00F4B9;
-  --sidebar-primary-foreground: #0F1623;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #00F4B9;
-  --sidebar-border: #1E293B;
-  --sidebar-ring: #00F4B9;
+  /* Dark Theme Sidebar - Deep contrast for investigation software */
+  --sidebar: #111827;
+  --sidebar-foreground: #E5E7EB;
+  --sidebar-primary: #60A5FA;
+  --sidebar-primary-foreground: #111827;
+  --sidebar-accent: #1F2937;
+  --sidebar-accent-foreground: #60A5FA;
+  --sidebar-border: #334155;
+  --sidebar-ring: #60A5FA;
+  --sidebar-hover: #1E293B;
+  --sidebar-active: #1F2937;
+  --sidebar-active-foreground: #60A5FA;
+  --sidebar-active-border: #60A5FA;
+  --sidebar-muted: #9CA3AF;
+  /* Dark Theme Navbar - Deep contrast for investigation software */
+  --navbar: #111827;
+  --navbar-foreground: #E5E7EB;
+  --navbar-border: #334155;
+  --navbar-muted: #9CA3AF;
+  --navbar-hover: #1E293B;
+  --navbar-accent: #00F4B9;
+  --navbar-accent-glow: rgba(0, 244, 185, 0.6);
 }
 
 @theme inline {
@@ -121,6 +149,17 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-foreground: var(--sidebar-active-foreground);
+  --color-sidebar-active-border: var(--sidebar-active-border);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-navbar: var(--navbar);
+  --color-navbar-foreground: var(--navbar-foreground);
+  --color-navbar-border: var(--navbar-border);
+  --color-navbar-muted: var(--navbar-muted);
+  --color-navbar-hover: var(--navbar-hover);
+  --color-navbar-accent: var(--navbar-accent);
 }
 
 @layer base {

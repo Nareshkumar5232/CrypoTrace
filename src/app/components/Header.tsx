@@ -1,6 +1,5 @@
-import { Shield, Moon, Sun } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Moon, Sun, Home, Briefcase, Wallet, ActivitySquare, Network, ShieldAlert, FileText, Users, Settings, LogOut } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,32 +8,30 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
 
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useAuthStore } from "../../store/authStore";
 import tnLogo from "../../Tamil_Nadu_State.webp";
+
+const navItems = [
+    { path: "/", label: "Home", icon: Home },
+    { path: "/cases", label: "Cases", icon: Briefcase },
+    { path: "/wallets", label: "Wallets", icon: Wallet },
+    { path: "/transactions", label: "Transactions", icon: ActivitySquare },
+    { path: "/clusters", label: "Analytics", icon: Network },
+    { path: "/alerts", label: "Alerts", icon: ShieldAlert },
+    { path: "/audit-logs", label: "Audit Logs", icon: FileText },
+    { path: "/users", label: "Users", icon: Users },
+    { path: "/settings", label: "Settings", icon: Settings },
+];
 
 export function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const pathnames = location.pathname.split('/').filter(x => x);
-    const [currentTime, setCurrentTime] = useState(new Date());
-
-    // Theme state
     const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
-
-    useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const mobileRef = useRef<HTMLDivElement>(null);
 
     const toggleTheme = () => {
         if (isDark) {
@@ -46,82 +43,140 @@ export function Header() {
         }
     };
 
+    // Close mobile menu on route change
+    useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+    // Close mobile menu on outside click
+    useEffect(() => {
+        if (!mobileOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (mobileRef.current && !mobileRef.current.contains(e.target as Node)) setMobileOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [mobileOpen]);
+
+    const isActive = (path: string) =>
+        path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-[#1E293B] bg-[#0F1623]">
-            <div className="flex h-full items-center justify-between px-6">
-                {/* Left Section: Breadcrumbs & App Name */}
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3 border-r border-[#1E293B] pr-6">
-                        <img src={tnLogo} alt="Tamil Nadu State Logo" className="h-8 object-contain" />
-                        <h1 className="text-sm font-extrabold tracking-tight text-[#00F4B9] drop-shadow-[0_0_8px_rgba(0,244,185,0.6)]">
-                            CryptoTrace <span className="text-white">Intelligence</span>
-                        </h1>
-                    </div>
+        <>
+            <header className="glass-navbar fixed top-0 left-0 right-0 z-50 h-16">
+                <div className="flex h-full items-center justify-between px-8 max-w-[1920px] mx-auto">
+                    {/* Left: Logo */}
+                    <Link to="/" className="flex items-center gap-3 shrink-0">
+                        <img src={tnLogo} alt="Logo" className="h-8 w-8 object-contain" />
+                        <span className="text-[15px] font-bold tracking-tight text-foreground hidden sm:block">
+                            Crypto<span className="text-navbar-accent">Trace</span>
+                        </span>
+                    </Link>
 
-                    <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
-                        <span className="font-medium text-white">Dashboard</span>
-                        {pathnames.length > 0 && (
-                            <>
-                                <span className="mx-1">/</span>
-                                <span className="font-medium text-white capitalize">
-                                    {pathnames[0].replace("-", "")}
-                                </span>
-                            </>
-                        )}
-                        {pathnames.includes("cases") && (
-                            <>
-                                <span className="mx-2 text-[#1E293B]">|</span>
-                                <span className="font-mono text-xs text-white bg-[#1E293B] px-2 py-0.5 rounded">CASE-2026-001</span>
-                            </>
-                        )}
-                    </div>
-                </div>
+                    {/* Center: Navigation links (desktop) */}
+                    <nav className="hidden lg:flex items-center gap-1">
+                        {navItems.map((item) => {
+                            const active = isActive(item.path);
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`glass-nav-link group relative px-3.5 py-2 text-[14px] font-medium tracking-wide transition-colors duration-200 ${active
+                                        ? "text-navbar-accent"
+                                        : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    {item.label}
+                                    {/* Animated underline */}
+                                    <span
+                                        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200 ease-out ${active ? "w-full bg-navbar-accent shadow-[0_0_6px_var(--navbar-accent-glow)]" : "w-0 bg-navbar-accent group-hover:w-full"
+                                            }`}
+                                    />
+                                </Link>
+                            );
+                        })}
+                    </nav>
 
-                {/* Right Section */}
-                <div className="flex items-center gap-6">
-                    <div className="text-xs font-mono text-[#00F4B9] tracking-widest drop-shadow-[0_0_2px_rgba(0,244,185,0.8)] flex flex-col items-end">
-                        <span>{currentTime.toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
-                        <span>{currentTime.toLocaleTimeString(undefined, { hour12: false })} LOCAL</span>
-                    </div>
-
-                    <div className="flex items-center gap-4 border-l border-[#1E293B] pl-6">
-                        <button
-                            onClick={toggleTheme}
-                            className="relative text-[#94A3B8] hover:text-white transition-colors"
-                            title="Toggle Theme"
-                        >
-                            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {/* Right: Actions */}
+                    <div className="flex items-center gap-2">
+                        {/* Theme toggle */}
+                        <button onClick={toggleTheme} className="glass-icon-btn" title="Toggle Theme">
+                            {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
                         </button>
 
+                        {/* Profile dropdown */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex items-center gap-2 hover:bg-[#1E293B] py-1 px-2 rounded transition-colors">
-                                    <div className="text-right">
-                                        <p className="text-xs font-medium text-white uppercase">{user?.name || "J. Smith"}</p>
-                                        <p className="text-[10px] text-[#94A3B8] uppercase">{user?.role || "Authorized Personnel"}</p>
+                                <button className="glass-icon-btn flex items-center gap-2 !px-2">
+                                    <div className="h-7 w-7 rounded-full bg-navbar-accent/20 flex items-center justify-center text-xs font-semibold text-navbar-accent">
+                                        {(user?.name || "JS").slice(0, 2).toUpperCase()}
                                     </div>
+                                    <span className="text-sm font-medium text-foreground hidden md:block">
+                                        {user?.name || "J. Smith"}
+                                    </span>
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-[#0F1623] border border-[#1E293B]">
-                                <DropdownMenuLabel className="text-xs uppercase text-[#94A3B8]">Agent ID: {user?.employeeId || "ID-4021"}</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-[#1E293B]" />
-                                <DropdownMenuItem className="text-sm text-white focus:bg-[#1E293B] focus:text-white" onClick={() => navigate("/settings")}>System Settings</DropdownMenuItem>
-                                <DropdownMenuItem className="text-sm text-white focus:bg-[#1E293B] focus:text-white" onClick={() => navigate("/audit-logs")}>Audit Log</DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-[#1E293B]" />
+                            <DropdownMenuContent align="end" className="w-56 glass-dropdown mt-2">
+                                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                    {user?.role || "Authorized Personnel"}
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+                                    <Settings className="mr-2 h-4 w-4" /> Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+                                    <Settings className="mr-2 h-4 w-4" /> Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                    className="text-sm text-[#EF4444] focus:bg-[#1E293B] focus:text-[#EF4444]"
+                                    className="cursor-pointer text-red-500 focus:text-red-500"
                                     onClick={() => {
                                         useAuthStore.getState().logout();
                                         navigate("/login", { replace: true });
                                     }}
                                 >
-                                    Sign Out (Secure)
+                                    <LogOut className="mr-2 h-4 w-4" /> Sign Out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
+
+            {/* Mobile dropdown panel */}
+            {mobileOpen && (
+                <div ref={mobileRef} className="glass-mobile-menu fixed top-16 left-0 right-0 z-40 lg:hidden">
+                    <nav className="flex flex-col p-4 gap-1">
+                        {navItems.map((item) => {
+                            const active = isActive(item.path);
+                            const Icon = item.icon;
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${active
+                                        ? "text-navbar-accent bg-navbar-accent/10"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                        }`}
+                                >
+                                    <Icon className="h-4 w-4" />
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
+                        <div className="border-t border-border mt-2 pt-2">
+                            <button
+                                onClick={() => {
+                                    useAuthStore.getState().logout();
+                                    navigate("/login", { replace: true });
+                                }}
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-500/10 w-full transition-colors duration-200"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                Sign Out
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            )}
+        </>
     );
 }
