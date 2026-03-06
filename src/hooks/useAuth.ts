@@ -10,8 +10,6 @@ export const useLogin = () => {
 
     const mutate = async (credentials: { employeeId: string; password: string }) => {
         setIsPending(true);
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
 
         if (credentials.employeeId !== 'ID-0001' || credentials.password !== '1234') {
             toast.error('Authentication failed. Invalid credentials.');

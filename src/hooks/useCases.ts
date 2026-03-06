@@ -1,47 +1,51 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useCases = (filters: any) => {
-    return useQuery({
-        queryKey: ['cases', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/cases', { params: filters });
-            return data;
-        },
-    });
+export const useCases = (_filters?: any) => {
+    const cases = useAppStore((s) => s.cases);
+    return { data: cases, isLoading: false, isError: false };
 };
 
 export const useUpdateCase = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-            const { data } = await api.patch(`/cases/${id}`, updates);
-            return data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['cases'] });
+    const updateCase = useAppStore((s) => s.updateCase);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: ({ id, updates }: { id: string; updates: any }) => {
+            setIsPending(true);
+            updateCase(id, updates);
             toast.success('Investigation record updated successfully.');
+            setIsPending(false);
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update investigation record.');
-        }
-    });
+        isPending,
+    };
 };
 
 export const useCreateCase = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (newCase: any) => {
-            const { data } = await api.post('/cases', newCase);
-            return data;
+    const addCase = useAppStore((s) => s.addCase);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (newCase: any) => {
+            setIsPending(true);
+            const id = addCase(newCase);
+            toast.success(`Investigation ${id} created successfully.`);
+            setIsPending(false);
+            return id;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['cases'] });
-            toast.success('Investigation record created successfully.');
+        isPending,
+    };
+};
+
+export const useDeleteCase = () => {
+    const deleteCase = useAppStore((s) => s.deleteCase);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (id: string) => {
+            setIsPending(true);
+            deleteCase(id);
+            toast.success(`Investigation ${id} deleted.`);
+            setIsPending(false);
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to create investigation record.');
-        }
-    });
+        isPending,
+    };
 };

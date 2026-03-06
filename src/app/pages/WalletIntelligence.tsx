@@ -2,13 +2,8 @@ import { useState } from "react";
 import { Filter, Search, ArrowDownRight, ArrowUpRight, ShieldAlert, Briefcase, ActivitySquare, Network, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useWallets, useWallet, useUpdateWallet } from "../../hooks/useWallets";
-
-// We keep a mock structure fallback if the backend transaction format doesn't match yet
-const mockTransactions = [
-    { id: "TX-9921", date: "2026-03-02 14:22:01", type: "Incoming", amount: "5.0 BTC", source: "W-7C44D...", destination: "W-9A21E...", risk: "High" },
-    { id: "TX-9920", date: "2026-03-02 12:15:44", type: "Outgoing", amount: "1.2 BTC", source: "W-9A21E...", destination: "W-8B39F...", risk: "Low" },
-    { id: "TX-9919", date: "2026-03-01 09:10:12", type: "Incoming", amount: "10.0 BTC", source: "Unknown", destination: "W-9A21E...", risk: "Medium" },
-];
+import { useTransactions } from "../../hooks/useTransactions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 
 export function WalletIntelligence() {
     const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
@@ -16,10 +11,13 @@ export function WalletIntelligence() {
     const { data: wallets, isLoading: listsLoading, isError: listsError } = useWallets({ search: searchTerm });
     const { data: selectedWallet, isLoading: detailLoading } = useWallet(selectedWalletId);
     const { mutate: updateWallet, isPending: isUpdating } = useUpdateWallet();
+    const { data: allTransactions } = useTransactions({});
 
     // Pagination and Filter state
     const [page, setPage] = useState(1);
     const [showCriticalOnly, setShowCriticalOnly] = useState(false);
+    const [showRiskModal, setShowRiskModal] = useState(false);
+    const [riskInput, setRiskInput] = useState('');
 
     const itemsPerPage = 10;
     const filteredWallets = (wallets || []).filter((w: any) => {
@@ -31,17 +29,22 @@ export function WalletIntelligence() {
     const totalPages = Math.max(1, Math.ceil(filteredWallets.length / itemsPerPage));
     const paginatedWallets = filteredWallets.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
+    // Get transactions linked to selected wallet
+    const walletTransactions = selectedWalletId
+        ? (allTransactions || []).filter((tx: any) => tx.source === selectedWalletId || tx.destination === selectedWalletId)
+        : [];
+
     const handleUpdateRisk = () => {
-        if (!selectedWalletId) return;
-        const newScore = window.prompt("Enter new risk score (0-100):");
-        if (newScore && !isNaN(Number(newScore))) {
-            const numScore = Number(newScore);
-            let riskLevel = "Low";
-            if (numScore >= 75) riskLevel = "Critical";
-            else if (numScore >= 50) riskLevel = "High";
-            else if (numScore >= 25) riskLevel = "Medium";
-            updateWallet({ id: selectedWalletId, updates: { risk_score: numScore, risk_level: riskLevel } });
-        }
+        if (!selectedWalletId || !riskInput) return;
+        const numScore = Number(riskInput);
+        if (isNaN(numScore) || numScore < 0 || numScore > 100) return;
+        let riskLevel = "Low";
+        if (numScore >= 75) riskLevel = "Critical";
+        else if (numScore >= 50) riskLevel = "High";
+        else if (numScore >= 25) riskLevel = "Medium";
+        updateWallet({ id: selectedWalletId, updates: { risk_score: numScore, risk_level: riskLevel } });
+        setShowRiskModal(false);
+        setRiskInput('');
     };
 
     const renderWalletList = () => (
@@ -188,7 +191,7 @@ export function WalletIntelligence() {
                         </div>
                         <div className="flex gap-2">
                             <button
-                                onClick={handleUpdateRisk}
+                                onClick={() => { setRiskInput(String(wallet.risk_score || '')); setShowRiskModal(true); }}
                                 disabled={isUpdating}
                                 className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors disabled:opacity-50"
                             >
@@ -253,27 +256,31 @@ export function WalletIntelligence() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E2E8F0]">
-                                {mockTransactions.map((tx) => (
+                                {walletTransactions.length === 0 && (
+                                    <tr><td colSpan={6} className="px-3 py-6 text-center text-xs text-[#64748B] uppercase tracking-wider font-bold">No transactions found</td></tr>
+                                )}
+                                {walletTransactions.map((tx: any) => (
                                     <tr key={tx.id}>
                                         <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{tx.id}</td>
-                                        <td className="px-3 py-1.5 text-xs text-[#0F172A]">{tx.date}</td>
+                                        <td className="px-3 py-1.5 text-xs text-[#0F172A]">{tx.date || tx.timestamp}</td>
                                         <td className="px-3 py-1.5">
                                             <div className="flex items-center gap-1">
-                                                <span className={`text-[10px] font-bold uppercase tracking-wider ${tx.type === "Incoming" ? "text-[#0F1623]" : "text-[#64748B]"}`}>
-                                                    {tx.type}
+                                                <span className={`text-[10px] font-bold uppercase tracking-wider ${tx.type === "Incoming" || tx.direction === "Incoming" ? "text-[#0F1623]" : "text-[#64748B]"}`}>
+                                                    {tx.type || tx.direction}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-3 py-1.5 text-[#0F172A] font-mono text-xs">
-                                            {tx.type === "Incoming" ? tx.source : tx.destination}
+                                            {(tx.type === "Incoming" || tx.direction === "Incoming") ? tx.source : tx.destination}
                                         </td>
-                                        <td className="px-3 py-1.5 font-mono text-xs text-[#0F172A]">{tx.amount}</td>
+                                        <td className="px-3 py-1.5 font-mono text-xs text-[#0F172A]">{tx.amount} {tx.asset || 'BTC'}</td>
                                         <td className="px-3 py-1.5">
-                                            <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase ${tx.risk === 'High' ? 'text-[#EF4444]' :
-                                                tx.risk === 'Medium' ? 'text-[#F59E0B]' :
+                                            <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase ${tx.risk === 'Critical' || tx.risk_level === 'Critical' ? 'text-[#EF4444]' :
+                                                tx.risk === 'High' || tx.risk_level === 'High' ? 'text-[#F59E0B]' :
+                                                tx.risk === 'Medium' || tx.risk_level === 'Medium' ? 'text-[#F59E0B]' :
                                                     'text-[#64748B] '
                                                 }`}>
-                                                {tx.risk}
+                                                {tx.risk || tx.risk_level || "Low"}
                                             </span>
                                         </td>
                                     </tr>
@@ -300,6 +307,31 @@ export function WalletIntelligence() {
             )}
 
             {selectedWalletId ? renderWalletDetail() : renderWalletList()}
+
+            {/* Risk Update Dialog */}
+            <Dialog open={showRiskModal} onOpenChange={setShowRiskModal}>
+                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Update Risk Score</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Risk Score (0-100)</label>
+                        <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={riskInput}
+                            onChange={(e) => setRiskInput(e.target.value)}
+                            className="w-full rounded border border-[#E2E8F0] px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#0F1623]"
+                            placeholder="Enter score 0-100"
+                        />
+                        <div className="flex justify-end gap-2 pt-2">
+                            <button onClick={() => setShowRiskModal(false)} className="rounded border border-[#E2E8F0] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#64748B] hover:bg-[#F1F5F9]">Cancel</button>
+                            <button onClick={handleUpdateRisk} className="rounded bg-[#0F1623] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B]">Update</button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

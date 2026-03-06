@@ -1,43 +1,28 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useWallets = (filters: any) => {
-    return useQuery({
-        queryKey: ['wallets', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/wallets', { params: filters });
-            return data;
-        },
-    });
+export const useWallets = (_filters?: any) => {
+    const wallets = useAppStore((s) => s.wallets);
+    return { data: wallets, isLoading: false, isError: false };
 };
 
 export const useWallet = (id: string | null) => {
-    return useQuery({
-        queryKey: ['wallet', id],
-        queryFn: async () => {
-            if (!id) return null;
-            const { data } = await api.get(`/wallets/${id}`);
-            return data;
-        },
-        enabled: !!id,
-    });
+    const wallets = useAppStore((s) => s.wallets);
+    const wallet = id ? wallets.find((w) => w.id === id) || null : null;
+    return { data: wallet, isLoading: false };
 };
 
 export const useUpdateWallet = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-            const { data } = await api.patch(`/wallets/${id}`, updates);
-            return data;
-        },
-        onSuccess: (_, { id }) => {
-            queryClient.invalidateQueries({ queryKey: ['wallets'] });
-            queryClient.invalidateQueries({ queryKey: ['wallet', id] });
+    const updateWallet = useAppStore((s) => s.updateWallet);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: ({ id, updates }: { id: string; updates: any }) => {
+            setIsPending(true);
+            updateWallet(id, updates);
             toast.success('Entity record updated successfully.');
+            setIsPending(false);
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update entity record.');
-        }
-    });
+        isPending,
+    };
 };

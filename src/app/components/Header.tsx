@@ -1,4 +1,4 @@
-import { Moon, Sun, Home, Briefcase, Wallet, ActivitySquare, Network, ShieldAlert, FileText, Users, Settings, LogOut } from "lucide-react";
+import { Moon, Sun, Home, Briefcase, Wallet, ActivitySquare, Network, ShieldAlert, FileText, Users, Settings, LogOut, Crosshair } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import {
     DropdownMenu,
@@ -15,6 +15,7 @@ import tnLogo from "../../Tamil_Nadu_State.webp";
 
 const navItems = [
     { path: "/", label: "Home", icon: Home },
+    { path: "/investigation", label: "Investigate", icon: Crosshair },
     { path: "/cases", label: "Cases", icon: Briefcase },
     { path: "/wallets", label: "Wallets", icon: Wallet },
     { path: "/transactions", label: "Transactions", icon: ActivitySquare },

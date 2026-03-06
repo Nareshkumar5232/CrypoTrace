@@ -1,12 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 
-export const useAuditLogs = (filters: any) => {
-    return useQuery({
-        queryKey: ['audit-logs', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/audit-logs', { params: filters });
-            return data;
-        },
-    });
+export const useAuditLogs = (_filters?: any) => {
+    const auditLogs = useAppStore((s) => s.auditLogs);
+    return { data: auditLogs, isLoading: false, isError: false };
 };

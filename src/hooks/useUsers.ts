@@ -1,47 +1,37 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useUsers = (filters: any) => {
-    return useQuery({
-        queryKey: ['users', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/users', { params: filters });
-            return data;
-        },
-    });
+export const useUsers = (_filters?: any) => {
+    const users = useAppStore((s) => s.users);
+    return { data: users, isLoading: false, isError: false };
 };
 
 export const useCreateUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (newUser: any) => {
-            const { data } = await api.post('/users', newUser);
-            return data;
+    const addUser = useAppStore((s) => s.addUser);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (newUser: any) => {
+            setIsPending(true);
+            const id = addUser(newUser);
+            toast.success(`Personnel ${id} created successfully.`);
+            setIsPending(false);
+            return id;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-            toast.success('Personnel record created successfully.');
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to create personnel record.');
-        }
-    });
+        isPending,
+    };
 };
 
-export const useUpdateUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-            const { data } = await api.patch(`/users/${id}`, updates);
-            return data;
+export const useToggleUserStatus = () => {
+    const toggleUserStatus = useAppStore((s) => s.toggleUserStatus);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (id: string) => {
+            setIsPending(true);
+            toggleUserStatus(id);
+            toast.success('Personnel status updated.');
+            setIsPending(false);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-            toast.success('Personnel record updated successfully.');
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update personnel record.');
-        }
-    });
+        isPending,
+    };
 };

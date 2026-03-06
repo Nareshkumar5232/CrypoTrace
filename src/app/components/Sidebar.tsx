@@ -11,7 +11,8 @@ import {
     Wallet,
     ActivitySquare,
     Users,
-    Briefcase
+    Briefcase,
+    Crosshair
 } from "lucide-react";
 
 interface SidebarProps {
@@ -21,6 +22,7 @@ interface SidebarProps {
 
 const navItems = [
     { path: "/", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/investigation", label: "Investigation", icon: Crosshair },
     { path: "/cases", label: "Case Management", icon: Briefcase },
     { path: "/wallets", label: "Wallet Intelligence", icon: Wallet },
     { path: "/transactions", label: "Transactions", icon: ActivitySquare },

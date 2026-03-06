@@ -1,30 +1,36 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useAlerts = (filters: any) => {
-    return useQuery({
-        queryKey: ['alerts', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/alerts', { params: filters });
-            return data;
-        },
-    });
+export const useAlerts = (_filters?: any) => {
+    const alerts = useAppStore((s) => s.alerts);
+    return { data: alerts, isLoading: false, isError: false };
 };
 
-export const useUpdateAlert = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-            const { data } = await api.patch(`/alerts/${id}`, updates);
-            return data;
+export const useResolveAlert = () => {
+    const resolveAlert = useAppStore((s) => s.resolveAlert);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (id: string) => {
+            setIsPending(true);
+            resolveAlert(id);
+            toast.success(`Alert ${id} resolved.`);
+            setIsPending(false);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['alerts'] });
-            toast.success('Intelligence Notification status updated successfully.');
+        isPending,
+    };
+};
+
+export const useEscalateAlert = () => {
+    const escalateAlert = useAppStore((s) => s.escalateAlert);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: (id: string) => {
+            setIsPending(true);
+            escalateAlert(id);
+            toast.success(`Alert ${id} escalated to Critical.`);
+            setIsPending(false);
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update intelligence notification.');
-        }
-    });
+        isPending,
+    };
 };

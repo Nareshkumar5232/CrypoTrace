@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Briefcase, Plus, Filter, Wallet, ShieldAlert, FileText, ChevronRight, Loader2 } from "lucide-react";
+import { Briefcase, Plus, Filter, Wallet, ShieldAlert, FileText, ChevronRight, Loader2, Trash2, X } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
-import { useCases, useUpdateCase, useCreateCase } from "../../hooks/useCases";
+import { useCases, useUpdateCase, useCreateCase, useDeleteCase } from "../../hooks/useCases";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
 import { useAlerts } from "../../hooks/useAlerts";
 import { useTransactions } from "../../hooks/useTransactions";
 import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { useWallets } from "../../hooks/useWallets";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "../components/ui/dialog";
+import { toast } from "sonner";
 
 // ─── Timeline Types ────────────────────────────────────────────────────────────
 interface TimelineEvent {
@@ -146,45 +148,68 @@ const EVENT_DOT: Record<string, string> = {
 export function CaseManagement() {
     const [selectedCase, setSelectedCase] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState<string>("All");
     const { data: cases, isLoading, isError } = useCases({ search: searchTerm });
     const { mutate: updateCase, isPending: isUpdating } = useUpdateCase();
     const { mutate: createCase, isPending: isCreating } = useCreateCase();
+    const { mutate: deleteCaseFn } = useDeleteCase();
 
-    // ── Case-scoped data for Investigation Timeline (enabled only when a case is open) ──
+    // ── Modal states ────────────────────────────────────────────────────────
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [createForm, setCreateForm] = useState({ title: '', wallet: '', description: '', riskLevel: 'Medium', officer: '' });
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+    // ── Case-scoped data for Investigation Timeline ──
     const { data: caseAlerts } = useAlerts({ case_id: selectedCase, limit: 200 });
     const { data: caseTransactions } = useTransactions({ case_id: selectedCase, limit: 200 });
     const { data: caseAuditLogs } = useAuditLogs({ case_id: selectedCase, limit: 200 });
     const { data: caseWallets } = useWallets({ case_id: selectedCase, limit: 200 });
 
-    // ── Build timeline whenever selected case data changes ───────────────────────
     const selectedCaseItem = (cases || []).find((c: any) => c.id === selectedCase);
-    // Notes are embedded inside audit_logs with action type "note" OR as a separate array
     const caseNotes = (caseAuditLogs || []).filter(
         (log: any) => typeof log.action === "string" && log.action.toLowerCase().includes("note")
     );
     const timelineEvents = selectedCaseItem
-        ? buildTimeline(
-            selectedCaseItem,
-            caseWallets || [],
-            caseAlerts || [],
-            caseTransactions || [],
-            caseNotes,
-            caseAuditLogs || []
-        )
+        ? buildTimeline(selectedCaseItem, caseWallets || [], caseAlerts || [], caseTransactions || [], caseNotes, caseAuditLogs || [])
         : [];
 
+    // ── Filtered cases ──────────────────────────────────────────────────────
+    const filteredCases = (cases || []).filter((c: any) => {
+        if (statusFilter !== 'All' && c.status !== statusFilter) return false;
+        if (searchTerm && !c.title?.toLowerCase().includes(searchTerm.toLowerCase()) && !c.id?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+        return true;
+    });
+
     const handleCreateCase = () => {
-        const title = window.prompt("Enter new case title:");
-        if (title) {
-            createCase({ title, status: "Open", riskLevel: "Medium" });
+        const errors: Record<string, string> = {};
+        if (!createForm.title.trim()) errors.title = 'Case title is required';
+        if (!createForm.wallet.trim()) errors.wallet = 'Wallet address is required';
+        if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+        setFormErrors({});
+        createCase({ title: createForm.title.trim(), wallets: createForm.wallet.trim(), description: createForm.description.trim(), riskLevel: createForm.riskLevel, officer: createForm.officer.trim() || 'Unassigned' });
+        setCreateForm({ title: '', wallet: '', description: '', riskLevel: 'Medium', officer: '' });
+        setShowCreateModal(false);
+    };
+
+    const handleDeleteCase = () => {
+        if (showDeleteModal) {
+            deleteCaseFn(showDeleteModal);
+            setShowDeleteModal(null);
+            if (selectedCase === showDeleteModal) setSelectedCase(null);
         }
     };
 
-    const handleChangeStatus = (id: string, currentStatus: string) => {
-        const newStatus = window.prompt("Enter new status (Open, In Progress, Closed):", currentStatus);
-        if (newStatus && ['Open', 'In Progress', 'Closed'].includes(newStatus)) {
-            updateCase({ id, updates: { status: newStatus } });
-        }
+    const handleChangeStatus = (id: string, newStatus: string) => {
+        updateCase({ id, updates: { status: newStatus } });
+    };
+
+    const handleAssignOfficer = (id: string) => {
+        const officers = ['J. Smith', 'R. Kumar', 'A. Patel', 'S. Iyer', 'M. Devi'];
+        const current = (cases || []).find((c: any) => c.id === id)?.officer;
+        const next = officers[(officers.indexOf(current || '') + 1) % officers.length];
+        updateCase({ id, updates: { officer: next } });
     };
 
     const renderCaseList = () => (
@@ -192,12 +217,26 @@ export function CaseManagement() {
             <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Active Investigations</h2>
                 <div className="flex gap-2">
-                    <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
-                        <Filter className="mr-1.5 h-3 w-3" />
-                        Filter
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowFilterMenu(!showFilterMenu)}
+                            className={`inline-flex items-center justify-center rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${statusFilter !== 'All' ? 'bg-[#0F1623] text-white border-[#0F1623]' : 'border-[#E2E8F0] bg-white text-[#0F172A] hover:bg-[#F1F5F9]'}`}
+                        >
+                            <Filter className="mr-1.5 h-3 w-3" />
+                            {statusFilter === 'All' ? 'Filter' : statusFilter}
+                        </button>
+                        {showFilterMenu && (
+                            <div className="absolute right-0 top-full mt-1 z-20 w-40 bg-white dark:bg-[#111111] border border-[#E5E7EB] dark:border-[#1F1F1F] rounded">
+                                {['All', 'Open', 'In Progress', 'Under Review', 'Escalated', 'Closed'].map((s) => (
+                                    <button key={s} onClick={() => { setStatusFilter(s); setShowFilterMenu(false); }}
+                                        className={`block w-full text-left px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider hover:bg-[#F1F5F9] ${statusFilter === s ? 'text-[#0F1623] bg-[#F1F5F9]' : 'text-[#64748B]'}`}
+                                    >{s}</button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                     <button
-                        onClick={handleCreateCase}
+                        onClick={() => setShowCreateModal(true)}
                         disabled={isCreating}
                         className="inline-flex items-center justify-center rounded bg-[#0F1623] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors disabled:opacity-50"
                     >
@@ -241,7 +280,7 @@ export function CaseManagement() {
                                 </td>
                             </tr>
                         )}
-                        {!isLoading && (cases || []).map((c: any) => (
+                        {!isLoading && (filteredCases || []).map((c: any) => (
                             <tr key={c.id}>
                                 <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{c.case_number || c.id}</td>
                                 <td className="px-3 py-1.5 text-xs font-medium text-[#0F172A]">{c.title}</td>
@@ -264,12 +303,21 @@ export function CaseManagement() {
                                 <td className="px-3 py-1.5 text-xs text-[#0F172A]">{c.officer || c.assigned_officer}</td>
                                 <td className="px-3 py-1.5 text-xs text-[#64748B]">{c.created || c.created_at}</td>
                                 <td className="px-3 py-1.5 text-right">
-                                    <button
-                                        onClick={() => setSelectedCase(c.id)}
-                                        className="inline-flex items-center text-[10px] font-bold uppercase text-[#0F1623] hover:underline"
-                                    >
-                                        View <ChevronRight className="ml-1 h-3 w-3" />
-                                    </button>
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            onClick={() => setShowDeleteModal(c.id)}
+                                            className="text-[10px] font-bold uppercase text-[#EF4444] hover:text-[#B91C1C]"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="h-3 w-3" />
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedCase(c.id)}
+                                            className="inline-flex items-center text-[10px] font-bold uppercase text-[#0F1623] hover:underline"
+                                        >
+                                            View <ChevronRight className="ml-1 h-3 w-3" />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -299,16 +347,34 @@ export function CaseManagement() {
                             </h2>
                         </div>
                         <div className="flex gap-2">
+                            <div className="relative group">
+                                <button
+                                    disabled={isUpdating}
+                                    className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors disabled:opacity-50"
+                                >
+                                    {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
+                                    Status: {caseItem.status}
+                                </button>
+                                <div className="absolute right-0 top-full mt-1 z-20 w-36 bg-white dark:bg-[#111111] border border-[#E5E7EB] dark:border-[#1F1F1F] rounded hidden group-hover:block">
+                                    {['Open', 'In Progress', 'Under Review', 'Escalated', 'Closed'].map((s) => (
+                                        <button key={s} onClick={() => handleChangeStatus(caseItem.id, s)}
+                                            className={`block w-full text-left px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider hover:bg-[#F1F5F9] ${caseItem.status === s ? 'text-[#0F1623] bg-[#F1F5F9]' : 'text-[#64748B]'}`}
+                                        >{s}</button>
+                                    ))}
+                                </div>
+                            </div>
                             <button
-                                onClick={() => handleChangeStatus(caseItem.id, caseItem.status)}
-                                disabled={isUpdating}
-                                className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors disabled:opacity-50"
+                                onClick={() => handleAssignOfficer(caseItem.id)}
+                                className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors"
                             >
-                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
-                                Change Status
-                            </button>
-                            <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
                                 Assign Officer
+                            </button>
+                            <button
+                                onClick={() => setShowDeleteModal(caseItem.id)}
+                                className="inline-flex items-center justify-center rounded border border-[#EF4444] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
+                            >
+                                <Trash2 className="mr-1 h-3 w-3" />
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -320,7 +386,7 @@ export function CaseManagement() {
                             Linked Entities
                         </span>
                         <span className="text-2xl font-bold text-[#0F172A]">
-                            {caseItem.wallets || 0}
+                            {Array.isArray(caseItem.wallets) ? caseItem.wallets.length : caseItem.wallets || 0}
                         </span>
                     </div>
 
@@ -329,7 +395,7 @@ export function CaseManagement() {
                             Intelligence Notifications
                         </span>
                         <span className="text-2xl font-bold text-[#0F172A]">
-                            {caseItem.alerts || 0}
+                            {Array.isArray(caseItem.alerts) ? caseItem.alerts.length : caseItem.alerts || 0}
                         </span>
                     </div>
 
@@ -338,7 +404,7 @@ export function CaseManagement() {
                             Case Notes
                         </span>
                         <span className="text-2xl font-bold text-[#0F172A]">
-                            {caseItem.notes || 0}
+                            {Array.isArray(caseItem.notes) ? caseItem.notes.length : caseItem.notes || 0}
                         </span>
                     </div>
                 </div>
@@ -348,27 +414,60 @@ export function CaseManagement() {
                         <TabsTrigger value="history">Audit & Note History Timeline</TabsTrigger>
                     </TabsList>
                     <TabsContent value="wallets" className="mt-0 space-y-4">
-                        <div className="bg-white border border-[#E2E8F0] h-64 flex flex-col">
+                        <div className="bg-white border border-[#E2E8F0] flex flex-col">
                             <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
                                 <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                                     Entity-level Linked Wallets Table
                                 </h2>
                             </div>
-                            <div className="flex-1 flex items-center justify-center text-xs text-[#64748B]">
-                                Data populated from case_wallets
-                            </div>
+                            {Array.isArray(caseItem.wallets) && caseItem.wallets.length > 0 ? (
+                                <table className="w-full text-sm">
+                                    <thead><tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
+                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Wallet ID</th>
+                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Address</th>
+                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
+                                    </tr></thead>
+                                    <tbody className="divide-y divide-[#E2E8F0]">
+                                        {caseItem.wallets.map((wId: string) => {
+                                            const w = (caseWallets || []).find((ww: any) => ww.id === wId);
+                                            return (
+                                                <tr key={wId}>
+                                                    <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{wId}</td>
+                                                    <td className="px-3 py-1.5 font-mono text-xs text-[#0F172A]">{w?.address || 'N/A'}</td>
+                                                    <td className="px-3 py-1.5 text-[10px] font-bold uppercase">{w?.risk_level || 'Unknown'}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="flex-1 flex items-center justify-center text-xs text-[#64748B] py-8">
+                                    No wallets linked to this case
+                                </div>
+                            )}
                         </div>
                     </TabsContent>
                     <TabsContent value="history" className="mt-0 space-y-4">
-                        <div className="bg-white border border-[#E2E8F0] h-64 flex flex-col">
+                        <div className="bg-white border border-[#E2E8F0] flex flex-col">
                             <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
                                 <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                                     Audit & Note History Timeline
                                 </h2>
                             </div>
-                            <div className="flex-1 flex items-center justify-center text-xs text-[#64748B]">
-                                Data populated from case_notes and audit_logs
-                            </div>
+                            {Array.isArray(caseItem.notes) && caseItem.notes.length > 0 ? (
+                                <div className="p-4 space-y-3">
+                                    {caseItem.notes.map((n: any, idx: number) => (
+                                        <div key={idx} className="flex gap-3 items-start border-b border-[#E2E8F0] pb-3 last:border-0">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] min-w-[120px]">{fmtTimestamp(n.created_at)}</span>
+                                            <p className="text-xs text-[#0F172A]">{n.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex-1 flex items-center justify-center text-xs text-[#64748B] py-8">
+                                    No notes recorded for this case
+                                </div>
+                            )}
                         </div>
                     </TabsContent>
                 </Tabs>
@@ -430,6 +529,93 @@ export function CaseManagement() {
             )}
 
             {selectedCase ? renderCaseDetail() : renderCaseList()}
+
+            {/* ── Create Case Modal ──────────────────────────────────── */}
+            <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>Create New Investigation</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Case Title *</label>
+                            <input value={createForm.title} onChange={(e) => setCreateForm(f => ({ ...f, title: e.target.value }))}
+                                className={`flex h-10 w-full rounded border px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] ${formErrors.title ? 'border-[#EF4444]' : 'border-[#E2E8F0]'}`}
+                                placeholder="e.g. Darknet Market Investigation" />
+                            {formErrors.title && <p className="text-[10px] text-[#EF4444] font-bold">{formErrors.title}</p>}
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Suspicious Wallet Address *</label>
+                            <input value={createForm.wallet} onChange={(e) => setCreateForm(f => ({ ...f, wallet: e.target.value }))}
+                                className={`flex h-10 w-full rounded border px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#0F1623] ${formErrors.wallet ? 'border-[#EF4444]' : 'border-[#E2E8F0]'}`}
+                                placeholder="0x742d35Cc6634C0532925a3b844Bc9e..." />
+                            {formErrors.wallet && <p className="text-[10px] text-[#EF4444] font-bold">{formErrors.wallet}</p>}
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Description</label>
+                            <textarea value={createForm.description} onChange={(e) => setCreateForm(f => ({ ...f, description: e.target.value }))}
+                                className="flex w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623] min-h-[60px]"
+                                placeholder="Brief description of suspicious activity..." />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Priority</label>
+                                <select value={createForm.riskLevel} onChange={(e) => setCreateForm(f => ({ ...f, riskLevel: e.target.value }))}
+                                    className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623]">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-[#0F1623]">Lead Officer</label>
+                                <select value={createForm.officer} onChange={(e) => setCreateForm(f => ({ ...f, officer: e.target.value }))}
+                                    className="flex h-10 w-full rounded border border-[#E2E8F0] px-3 py-2 text-sm focus:outline-none focus:border-[#0F1623]">
+                                    <option value="">Unassigned</option>
+                                    <option value="J. Smith">J. Smith</option>
+                                    <option value="R. Kumar">R. Kumar</option>
+                                    <option value="A. Patel">A. Patel</option>
+                                    <option value="S. Iyer">S. Iyer</option>
+                                    <option value="M. Devi">M. Devi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <button onClick={() => { setShowCreateModal(false); setFormErrors({}); }}
+                            className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] transition-colors">
+                            Cancel
+                        </button>
+                        <button onClick={handleCreateCase}
+                            className="inline-flex items-center justify-center rounded bg-[#0F1623] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] transition-colors">
+                            Create Case
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Delete Confirmation Modal ──────────────────────────── */}
+            <Dialog open={!!showDeleteModal} onOpenChange={() => setShowDeleteModal(null)}>
+                <DialogContent className="sm:max-w-[400px]">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Deletion</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-[#64748B] py-4">
+                        Are you sure you want to delete investigation <span className="font-mono font-bold text-[#0F172A]">{showDeleteModal}</span>? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end gap-2">
+                        <button onClick={() => setShowDeleteModal(null)}
+                            className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] transition-colors">
+                            Cancel
+                        </button>
+                        <button onClick={handleDeleteCase}
+                            className="inline-flex items-center justify-center rounded bg-[#EF4444] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#B91C1C] transition-colors">
+                            Delete
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

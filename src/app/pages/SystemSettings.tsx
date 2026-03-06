@@ -1,6 +1,7 @@
 import { Save, Loader2, ShieldCheck, Database, Server, Key } from "lucide-react";
 import { useState } from "react";
 import { TnLoader } from "../components/TnLoader";
+import { toast } from "sonner";
 
 export function SystemSettings() {
     const [isSaving, setIsSaving] = useState(false);
@@ -9,8 +10,8 @@ export function SystemSettings() {
         setIsSaving(true);
         setTimeout(() => {
             setIsSaving(false);
-            window.alert('Settings securely saved.');
-        }, 1200);
+            toast.success('Settings securely saved.');
+        }, 300);
     };
 
     return (

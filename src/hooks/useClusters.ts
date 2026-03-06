@@ -1,42 +1,28 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useClusters = (filters: any) => {
-    return useQuery({
-        queryKey: ['clusters', filters],
-        queryFn: async () => {
-            const { data } = await api.get('/clusters', { params: filters });
-            return data;
-        },
-    });
+export const useClusters = (_filters?: any) => {
+    const clusters = useAppStore((s) => s.clusters);
+    return { data: clusters, isLoading: false, isError: false };
 };
 
 export const useUpdateCluster = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-            const { data } = await api.patch(`/clusters/${id}`, updates);
-            return data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['clusters'] });
+    const updateCluster = useAppStore((s) => s.updateCluster);
+    const [isPending, setIsPending] = useState(false);
+    return {
+        mutate: ({ id, updates }: { id: string; updates: any }) => {
+            setIsPending(true);
+            updateCluster(id, updates);
             toast.success('Cluster record updated successfully.');
+            setIsPending(false);
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Failed to update cluster record.');
-        }
-    });
+        isPending,
+    };
 };
 
 export const useCluster = (id: string | null) => {
-    return useQuery({
-        queryKey: ['cluster', id],
-        queryFn: async () => {
-            if (!id) return null;
-            const { data } = await api.get(`/clusters/${id}`);
-            return data;
-        },
-        enabled: !!id,
-    });
+    const clusters = useAppStore((s) => s.clusters);
+    const cluster = id ? clusters.find((c) => c.id === id) || null : null;
+    return { data: cluster, isLoading: false };
 };
