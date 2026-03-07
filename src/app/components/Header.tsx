@@ -65,9 +65,9 @@ export function Header() {
             <header className="glass-navbar fixed top-0 left-0 w-full z-[1000] h-16 transition-smooth">
                 <div className="flex h-full items-center justify-between px-8 max-w-[1920px] mx-auto">
                     {/* Left: Logo */}
-                    <Link to="/" className="flex items-center gap-3 shrink-0 transition-smooth-fast hover:opacity-90">
-                        <img src={tnLogo} alt="Logo" className="h-8 w-8 object-contain" />
-                        <span className="text-[15px] font-bold tracking-tight text-foreground hidden sm:block">
+                    <Link to="/" className="flex items-center gap-3 shrink-0 transition-all duration-200 hover:opacity-90 active:scale-[0.98]">
+                        <img src={tnLogo} alt="Logo" className="h-9 w-9 object-contain" />
+                        <span className="text-base font-bold tracking-tight text-foreground hidden sm:block">
                             Crypto<span className="text-navbar-accent">Trace</span>
                         </span>
                     </Link>

@@ -52,14 +52,12 @@ export function UserAdmin() {
             <div className="grid gap-6 lg:grid-cols-3">
                 {/* Roles Summary */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white border border-[#E2E8F0] h-full transition-smooth hover-lift dark:bg-card dark:border-border">
-                        <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
-                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">
-                                SYSTEM ROLES
-                            </h2>
+                    <div className="dash-card !p-0 overflow-hidden h-full transition-smooth hover-lift">
+                        <div className="border-b-2 border-border bg-muted/30 px-6 py-4">
+                            <h2 className="section-heading">SYSTEM ROLES</h2>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="w-full text-sm data-table">
                                 <tbody className="divide-y divide-[#E2E8F0] relative">
                                     {rolesLoading && (
                                         <tr>
@@ -89,11 +87,9 @@ export function UserAdmin() {
 
                 {/* Users List */}
                 <div className="lg:col-span-2">
-                    <div className="bg-white border border-[#E2E8F0] h-full">
-                        <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                                ACTIVE PERSONNEL
-                            </h2>
+                    <div className="dash-card !p-0 overflow-hidden h-full">
+                        <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                            <h2 className="section-heading">ACTIVE PERSONNEL</h2>
                             <div className="flex gap-2">
                                 <div className="relative">
                                     <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -115,7 +111,7 @@ export function UserAdmin() {
                                             ADD USER
                                         </button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px] bg-white border border-[#E2E8F0]">
+                                    <DialogContent className="sm:max-w-[425px] section-box">
                                         <DialogHeader>
                                             <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Add New Personnel</DialogTitle>
                                         </DialogHeader>
@@ -152,15 +148,15 @@ export function UserAdmin() {
                             </div>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="w-full text-sm data-table">
                                 <thead>
-                                    <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Employee ID</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Name</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Department</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Assigned Role</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Status</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Action</th>
+                                    <tr>
+                                        <th className="text-left">Employee ID</th>
+                                        <th className="text-left">Name</th>
+                                        <th className="text-left">Department</th>
+                                        <th className="text-left">Assigned Role</th>
+                                        <th className="text-left">Status</th>
+                                        <th className="text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[#E2E8F0] relative">
@@ -228,7 +224,7 @@ export function UserAdmin() {
 
             {/* Toggle Status Confirmation Dialog */}
             <Dialog open={!!confirmToggle} onOpenChange={(open) => { if (!open) setConfirmToggle(null); }}>
-                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                <DialogContent className="sm:max-w-[400px] section-box">
                     <DialogHeader>
                         <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                             Confirm {confirmToggle?.status === 'Active' ? 'Deactivation' : 'Activation'}

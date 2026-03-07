@@ -42,10 +42,10 @@ export function AuditLogs() {
                 </p>
             </div>
 
-            <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
-                <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] flex items-center gap-2">
-                        AUDIT TRAIL
+            <div className="dash-card !p-0 overflow-hidden transition-smooth">
+                <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                    <h2 className="section-heading">
+                        Audit Trail
                     </h2>
                     <div className="flex gap-2">
                         <div className="relative">
@@ -79,16 +79,16 @@ export function AuditLogs() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm table-rows-animate">
+                    <table className="w-full text-sm table-rows-animate data-table">
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Log ID</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Timestamp (UTC)</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">User / System</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Action Performed</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity Type</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity ID</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">IP Address</th>
+                            <tr>
+                                <th className="text-left">Log ID</th>
+                                <th className="text-left">Timestamp (UTC)</th>
+                                <th className="text-left">User / System</th>
+                                <th className="text-left">Action Performed</th>
+                                <th className="text-left">Entity Type</th>
+                                <th className="text-left">Entity ID</th>
+                                <th className="text-right">IP Address</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#E2E8F0] relative">

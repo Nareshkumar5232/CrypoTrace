@@ -39,7 +39,7 @@ export function SystemSettings() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Security Settings */}
-                <div className="bg-white border border-[#E2E8F0]">
+                <div className="section-box">
                     <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-[#0F172A]" />
                         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
@@ -63,7 +63,7 @@ export function SystemSettings() {
                 </div>
 
                 {/* API & Integrations */}
-                <div className="bg-white border border-[#E2E8F0]">
+                <div className="section-box">
                     <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 flex items-center gap-2">
                         <Key className="h-4 w-4 text-[#0F172A]" />
                         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
@@ -83,7 +83,7 @@ export function SystemSettings() {
                 </div>
 
                 {/* Database Settings */}
-                <div className="bg-white border border-[#E2E8F0]">
+                <div className="section-box">
                     <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 flex items-center gap-2">
                         <Database className="h-4 w-4 text-[#0F172A]" />
                         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
@@ -107,7 +107,7 @@ export function SystemSettings() {
                 </div>
 
                 {/* System Diagnostics */}
-                <div className="bg-white border border-[#E2E8F0]">
+                <div className="section-box">
                     <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 flex items-center gap-2">
                         <Server className="h-4 w-4 text-[#0F172A]" />
                         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">

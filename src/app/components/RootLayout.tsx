@@ -27,7 +27,7 @@ export function RootLayout() {
             <Header />
             <main className="mt-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden bg-white dark:bg-background">
                 <motion.div
-                    className="mx-auto w-full max-w-[1200px] p-8"
+                    className="mx-auto w-full max-w-[1200px] px-6 py-8 sm:px-8"
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}

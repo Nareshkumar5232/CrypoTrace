@@ -184,9 +184,21 @@ export function Dashboard() {
     const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d">("7d");
     const [network, setNetwork] = useState("All Networks");
     const [activeDonutIdx, setActiveDonutIdx] = useState<number>(0);
+    const [caseSearchTerm, setCaseSearchTerm] = useState("");
     const onDonutEnter = useCallback((_: any, index: number) => setActiveDonutIdx(index), []);
 
     const chartData = activityDataSets[timeRange].data;
+
+    const filteredCases = caseSearchTerm.trim()
+        ? recentCases.filter((c: any) => {
+            const q = caseSearchTerm.toLowerCase();
+            const id = (c.id ?? "").toString().toLowerCase();
+            const title = (c.title ?? "").toLowerCase();
+            const status = (c.status ?? "").toLowerCase();
+            const officer = (c.officer ?? c.assigned_officer ?? "").toLowerCase();
+            return id.includes(q) || title.includes(q) || status.includes(q) || officer.includes(q);
+        })
+        : recentCases;
 
     return (
         <motion.div
@@ -202,11 +214,17 @@ export function Dashboard() {
                 className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
                 variants={fadeInUp}
             >
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                        Investigation Intelligence Dashboard
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <h1 className="page-title text-2xl sm:text-3xl">
+                            Investigation Intelligence Dashboard
+                        </h1>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                            Live
+                        </span>
+                    </div>
+                    <p className="page-subtitle">
                         Real-time monitoring of blockchain risk activity
                     </p>
                 </div>
@@ -239,32 +257,34 @@ export function Dashboard() {
             </motion.div>
 
             {/* ── Suspicious Wallet Investigation Entry ── */}
-            <motion.div variants={fadeInUp} className="dash-card hover-lift !p-0 overflow-hidden transition-smooth border-l-2 border-l-navbar-accent">
-                <div className="flex items-center gap-3 px-6 pt-5 pb-2">
-                    <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center">
-                        <Crosshair className="h-4.5 w-4.5 text-red-600 dark:text-red-400" />
+            <motion.div variants={fadeInUp} className="dash-card hover-lift !p-0 overflow-hidden transition-smooth border-l-4 border-l-navbar-accent">
+                <div className="flex items-center gap-4 px-6 pt-6 pb-3">
+                    <div className="h-11 w-11 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
+                        <Crosshair className="h-5 w-5 text-red-600 dark:text-red-400" />
                     </div>
-                    <div>
-                        <h3 className="text-sm font-semibold text-foreground">Start New Investigation</h3>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">Enter a suspicious wallet address to begin tracing fund movements</p>
+                    <div className="min-w-0">
+                        <h3 className="section-heading">Start New Investigation</h3>
+                        <p className="text-sm text-muted-foreground mt-0.5">Enter a suspicious wallet address to begin tracing fund movements</p>
                     </div>
                 </div>
-                <div className="px-6 pb-5 pt-3 flex items-center gap-3">
-                    <div className="relative flex-1">
-                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="px-6 pb-6 pt-3 flex items-center gap-3">
+                    <div className="relative flex-1 min-w-0 h-11">
+                        <span className="absolute left-3.5 top-0 bottom-0 flex items-center pointer-events-none">
+                            <SearchIcon className="h-4 w-4 text-muted-foreground" aria-hidden />
+                        </span>
                         <input
                             type="text"
                             value={walletInput}
                             onChange={(e) => setWalletInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleStartInvestigation()}
-                            placeholder="Enter wallet address (e.g. 0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18)"
-                            className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-navbar-accent transition-smooth-fast"
+                            placeholder="Enter wallet address (e.g. 0x742d35Cc...)"
+                            className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
                         />
                     </div>
                     <button
                         onClick={handleStartInvestigation}
                         disabled={isTracing || !walletInput.trim()}
-                        className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#0F1623] px-5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        className="dash-btn-primary h-11 px-5 shrink-0"
                     >
                         {isTracing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
                         Start Investigation
@@ -292,30 +312,31 @@ export function Dashboard() {
 
             {/* ── Metrics Cards ── */}
             <motion.div className="grid gap-6 md:grid-cols-3" variants={fadeInUp}>
-                {kpiData.map((kpi) => {
+                {kpiData.map((kpi, idx) => {
                     const Icon = kpi.icon;
+                    const borderClass = idx === 0 ? "border-l-4 border-l-blue-500" : idx === 1 ? "border-l-4 border-l-red-500" : "border-l-4 border-l-amber-500";
                     return (
                         <motion.div
                             key={kpi.title}
-                            className="dash-card group transition-smooth hover-lift"
+                            className={`dash-card ${borderClass} group transition-smooth hover-lift`}
                             variants={fadeInUp}
                             whileHover={{ y: -8, scale: 1.02 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
-                            <div className="flex items-start justify-between">
-                                <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${kpi.iconBg}`}>
-                                    <Icon className="h-5 w-5" />
+                            <div className="flex items-start justify-between gap-3">
+                                <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${kpi.iconBg}`}>
+                                    <Icon className="h-6 w-6" />
                                 </div>
-                                <div className={`flex items-center gap-1 text-xs font-semibold ${kpi.trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
-                                    {kpi.trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                                <div className={`flex items-center gap-1.5 text-xs font-semibold shrink-0 ${kpi.trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
+                                    {kpi.trendUp ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                                     {kpi.trend}
                                 </div>
                             </div>
-                            <div className="mt-4">
-                                <p className="text-3xl font-bold text-foreground tracking-tight">
-                                    {isLoading ? <span className="inline-block h-8 w-16 rounded-lg bg-muted animate-pulse" /> : kpi.value}
+                            <div className="mt-5">
+                                <p className="text-3xl font-bold text-foreground tracking-tight tabular-nums">
+                                    {isLoading ? <span className="inline-block h-9 w-20 rounded-lg bg-muted animate-pulse" /> : kpi.value}
                                 </p>
-                                <p className="text-sm text-muted-foreground mt-1">{kpi.title}</p>
+                                <p className="text-sm text-muted-foreground mt-1.5">{kpi.title}</p>
                             </div>
                         </motion.div>
                     );
@@ -332,7 +353,7 @@ export function Dashboard() {
                     ))}
                 </div>
                 <div className="relative">
-                    <select value={network} onChange={(e) => setNetwork(e.target.value)} className="chart-select">
+                    <select value={network} onChange={(e) => setNetwork(e.target.value)} className="chart-select" aria-label="Network filter">
                         {networkOptions.map((n) => <option key={n}>{n}</option>)}
                     </select>
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
@@ -346,17 +367,17 @@ export function Dashboard() {
                     className="dash-card lg:col-span-3 !p-0 overflow-hidden transition-smooth"
                     whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.1)" }}
                 >
-                    <div className="flex items-start justify-between px-6 pt-6 pb-2">
-                        <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                <Activity className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
+                    <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                                <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <div>
-                                <h3 className="text-sm font-semibold text-foreground">Transaction Risk Activity</h3>
-                                <p className="text-[11px] text-muted-foreground mt-0.5">Flagged blockchain transactions — {activityDataSets[timeRange].label}</p>
+                            <div className="min-w-0">
+                                <h3 className="section-heading">Transaction Risk Activity</h3>
+                                <p className="text-xs text-muted-foreground mt-0.5">Flagged transactions — {activityDataSets[timeRange].label}</p>
                             </div>
                         </div>
-                        <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">{network}</span>
+                        <span className="text-xs font-medium text-muted-foreground bg-muted/80 px-2.5 py-1 rounded-lg shrink-0">{network}</span>
                     </div>
                     {isLoading ? <ChartSkeleton /> : (
                         <div className="h-64 px-2 pb-2">
@@ -385,12 +406,12 @@ export function Dashboard() {
                     whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.1)" }}
                 >
                     <div className="flex items-start gap-3 px-6 pt-6 pb-2">
-                        <div className="h-9 w-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                            <PieIcon className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
+                        <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                            <PieIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                         </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-foreground">Risk Distribution</h3>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">Monitored wallet risk classification</p>
+                        <div className="min-w-0">
+                            <h3 className="section-heading">Risk Distribution</h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">Monitored wallet risk classification</p>
                         </div>
                     </div>
                     {isLoading ? <ChartSkeleton /> : (
@@ -444,23 +465,30 @@ export function Dashboard() {
 
             {/* ── Investigations Table ── */}
             <motion.div className="dash-card !p-0 overflow-hidden transition-smooth" variants={fadeInUp}>
-                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">Active Investigations</h3>
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <input type="text" placeholder="Search cases..." className="h-8 w-48 rounded-lg border border-border bg-background pl-9 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-navbar-accent" />
-                        </div>
+                <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-border bg-muted/30">
+                    <h3 className="section-heading">Active Investigations</h3>
+                    <div className="relative h-9 flex items-center">
+                        <span className="absolute left-3 top-0 bottom-0 w-4 flex items-center justify-center pointer-events-none">
+                            <SearchIcon className="h-4 w-4 text-muted-foreground block shrink-0 translate-y-px" aria-hidden />
+                        </span>
+                        <input
+                            type="search"
+                            placeholder="Search by case ID, title, status, officer..."
+                            aria-label="Search cases"
+                            value={caseSearchTerm}
+                            onChange={(e) => setCaseSearchTerm(e.target.value)}
+                            className="h-9 w-52 rounded-xl border border-border bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent input-glow"
+                        />
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm table-rows-animate">
+                    <table className="w-full text-sm table-rows-animate data-table">
                         <thead>
-                            <tr className="border-b border-border bg-muted/50">
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground tracking-wider">Case ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground tracking-wider">Title</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground tracking-wider">Lead Officer</th>
+                            <tr>
+                                <th className="text-left">Case ID</th>
+                                <th className="text-left">Title</th>
+                                <th className="text-left">Status</th>
+                                <th className="text-right">Lead Officer</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
@@ -474,16 +502,23 @@ export function Dashboard() {
                                     </td>
                                 </tr>
                             )}
-                            {!isLoading && recentCases.map((c: any) => (
+                            {!isLoading && recentCases.length > 0 && filteredCases.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                                        No cases match &quot;{caseSearchTerm}&quot;
+                                    </td>
+                                </tr>
+                            )}
+                            {!isLoading && filteredCases.map((c: any) => (
                                 <tr
                                     key={c.id}
                                     className="hover:bg-muted/30 transition-smooth-fast cursor-pointer table-row-hover hover:translate-x-0.5"
                                     onClick={() => navigate(`/investigation/${encodeURIComponent(c.id)}`)}
                                 >
-                                    <td className="px-6 py-3.5 font-mono text-xs text-muted-foreground">{c.id}</td>
-                                    <td className="px-6 py-3.5 text-sm font-medium text-foreground">{c.title}</td>
-                                    <td className="px-6 py-3.5"><StatusBadge status={c.status} /></td>
-                                    <td className="px-6 py-3.5 text-sm text-right text-foreground">{c.officer || c.assigned_officer}</td>
+                                    <td className="font-mono text-xs text-muted-foreground">{c.id}</td>
+                                    <td className="text-sm font-medium text-foreground">{c.title}</td>
+                                    <td><StatusBadge status={c.status} /></td>
+                                    <td className="text-sm text-right text-foreground">{c.officer || c.assigned_officer}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -493,7 +528,7 @@ export function Dashboard() {
 
             {/* ── Audit Activity Feed ── */}
             <motion.div className="dash-card transition-smooth" variants={fadeInUp}>
-                <h3 className="text-sm font-semibold text-foreground mb-5">System Audit Trail</h3>
+                <h3 className="section-heading mb-5">System Audit Trail</h3>
                 <div className="space-y-4 list-stagger">
                     {isLoading && <TnLoader text="Loading audit trail..." />}
                     {!isLoading && recentAuditLogs.length === 0 && (

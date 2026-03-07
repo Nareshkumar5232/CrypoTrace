@@ -213,9 +213,9 @@ export function CaseManagement() {
     };
 
     const renderCaseList = () => (
-        <div className="bg-white border border-[#E2E8F0]">
-            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Active Investigations</h2>
+        <div className="dash-card !p-0 overflow-hidden">
+            <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                <h2 className="section-heading">Active Investigations</h2>
                 <div className="flex gap-2">
                     <div className="relative">
                         <button
@@ -246,19 +246,19 @@ export function CaseManagement() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm data-table">
                     <thead>
-                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Case ID</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Title</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Status</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Officer</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Created</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]"></th>
+                        <tr>
+                            <th className="text-left">Case ID</th>
+                            <th className="text-left">Title</th>
+                            <th className="text-left">Status</th>
+                            <th className="text-left">Risk Level</th>
+                            <th className="text-left">Officer</th>
+                            <th className="text-left">Created</th>
+                            <th className="text-right"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#E2E8F0] relative">
+                    <tbody className="relative">
                         {isLoading && (
                             <tr>
                                 <td colSpan={7} className="p-0">
@@ -381,7 +381,7 @@ export function CaseManagement() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Linked Entities
                         </span>
@@ -390,7 +390,7 @@ export function CaseManagement() {
                         </span>
                     </div>
 
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Intelligence Notifications
                         </span>
@@ -399,7 +399,7 @@ export function CaseManagement() {
                         </span>
                     </div>
 
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Case Notes
                         </span>
@@ -414,18 +414,16 @@ export function CaseManagement() {
                         <TabsTrigger value="history">Audit & Note History Timeline</TabsTrigger>
                     </TabsList>
                     <TabsContent value="wallets" className="mt-0 space-y-4">
-                        <div className="bg-white border border-[#E2E8F0] flex flex-col">
-                            <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                                    Entity-level Linked Wallets Table
-                                </h2>
+                        <div className="dash-card !p-0 overflow-hidden flex flex-col">
+                            <div className="border-b-2 border-border bg-muted/30 px-6 py-4">
+                                <h2 className="section-heading">Entity-level Linked Wallets Table</h2>
                             </div>
                             {Array.isArray(caseItem.wallets) && caseItem.wallets.length > 0 ? (
-                                <table className="w-full text-sm">
-                                    <thead><tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Wallet ID</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Address</th>
-                                        <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
+                                <table className="w-full text-sm data-table">
+                                    <thead><tr>
+                                        <th className="text-left">Wallet ID</th>
+                                        <th className="text-left">Address</th>
+                                        <th className="text-left">Risk Level</th>
                                     </tr></thead>
                                     <tbody className="divide-y divide-[#E2E8F0]">
                                         {caseItem.wallets.map((wId: string) => {
@@ -448,11 +446,9 @@ export function CaseManagement() {
                         </div>
                     </TabsContent>
                     <TabsContent value="history" className="mt-0 space-y-4">
-                        <div className="bg-white border border-[#E2E8F0] flex flex-col">
-                            <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                                    Audit & Note History Timeline
-                                </h2>
+                        <div className="dash-card !p-0 overflow-hidden flex flex-col">
+                            <div className="border-b-2 border-border bg-muted/30 px-6 py-4">
+                                <h2 className="section-heading">Audit & Note History Timeline</h2>
                             </div>
                             {Array.isArray(caseItem.notes) && caseItem.notes.length > 0 ? (
                                 <div className="p-4 space-y-3">
@@ -473,11 +469,9 @@ export function CaseManagement() {
                 </Tabs>
 
                 {/* ── Investigation Timeline ─────────────────────────────── */}
-                <div className="bg-white border border-[#E2E8F0]">
-                    <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                            Investigation Timeline
-                        </h2>
+                <div className="dash-card !p-0 overflow-hidden">
+                    <div className="border-b-2 border-border bg-muted/30 px-6 py-4">
+                        <h2 className="section-heading">Investigation Timeline</h2>
                     </div>
                     <div className="px-4 py-4">
                         {timelineEvents.length === 0 ? (

@@ -54,9 +54,9 @@ export function TransactionView() {
                 </p>
             </div>
 
-            <div className="bg-white border border-[#E2E8F0]">
-                <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Transaction History</h2>
+            <div className="dash-card !p-0 overflow-hidden">
+                <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                    <h2 className="section-heading">Transaction History</h2>
                     <div className="flex gap-2">
                         <div className="relative">
                             <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -88,17 +88,17 @@ export function TransactionView() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm table-rows-animate">
+                    <table className="w-full text-sm table-rows-animate data-table">
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">TX ID</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Date/Time (UTC)</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Direction</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Source</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Destination</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Amount</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Flag</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Linked Case</th>
+                            <tr>
+                                <th className="text-left">TX ID</th>
+                                <th className="text-left">Date/Time (UTC)</th>
+                                <th className="text-left">Direction</th>
+                                <th className="text-left">Source</th>
+                                <th className="text-left">Destination</th>
+                                <th className="text-right">Amount</th>
+                                <th className="text-left">Risk Flag</th>
+                                <th className="text-left">Linked Case</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#E2E8F0] relative">

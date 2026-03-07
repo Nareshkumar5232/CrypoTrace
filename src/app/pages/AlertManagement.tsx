@@ -45,68 +45,77 @@ export function AlertManagement() {
             }}
         >
             <motion.div
-                className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4"
+                className="flex flex-col gap-1 border-b border-border pb-5"
                 variants={pageVariants}
             >
-                <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
-                    INTELLIGENCE NOTIFICATIONS
+                <h1 className="page-title text-xl">
+                    Intelligence Notifications
                 </h1>
-                <p className="text-xs uppercase tracking-wider text-[#64748B]">
+                <p className="page-subtitle">
                     Automated risk triggers and investigative workflows
                 </p>
             </motion.div>
 
-            <motion.div className="bg-white border border-[#E2E8F0]" variants={pageVariants}>
-                <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] flex items-center gap-2">
-                        ACTIVE NOTIFICATIONS
+            <motion.div className="dash-card !p-0 overflow-hidden" variants={pageVariants}>
+                <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-6 py-4">
+                    <h2 className="section-heading flex items-center gap-2">
+                        Active Notifications
                     </h2>
                     <div className="flex gap-2">
-                        <div className="relative">
-                            <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
+                        <div className="relative h-9">
+                            <span className="absolute left-3 top-0 bottom-0 flex items-center pointer-events-none">
+                                <Search className="h-4 w-4 text-muted-foreground" aria-hidden />
+                            </span>
                             <input
-                                type="text"
+                                type="search"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="SEARCH NOTIFICATION ID OR ENTITY..."
-                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
+                                placeholder="Search notification or entity..."
+                                aria-label="Search notifications"
+                                className="h-9 w-56 rounded-xl border border-border bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
                             />
                         </div>
-                        <div className="flex items-center gap-2 border border-[#E2E8F0] bg-white px-2 py-1 rounded">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#0F172A]">Auto-Refresh</span>
+                        <div className="flex items-center gap-2 border border-border bg-background px-3 py-1.5 rounded-xl">
+                            <span className="text-xs font-medium text-foreground">Auto-Refresh</span>
                             <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
                         </div>
-                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-smooth-fast"
-                            onClick={() => setShowFilterMenu(!showFilterMenu)}>
-                            <Filter className="mr-1.5 h-3 w-3" />
+                        <button
+                            className="chart-filter-btn inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+                            onClick={() => setShowFilterMenu(!showFilterMenu)}
+                        >
+                            <Filter className="h-3.5 w-3.5" />
                             {severityFilter === 'All' ? 'Filter' : severityFilter}
                         </button>
                         {showFilterMenu && (
-                            <div className="absolute right-0 top-full mt-1 z-20 w-36 bg-white dark:bg-[#111111] border border-[#E5E7EB] dark:border-[#1F1F1F] rounded">
+                            <div className="absolute right-0 top-full mt-1.5 z-20 w-40 bg-card dark:bg-card border border-border rounded-xl shadow-lg overflow-hidden">
                                 {['All', 'Critical', 'High', 'Medium', 'Low'].map((s) => (
-                                    <button key={s} onClick={() => { setSeverityFilter(s); setShowFilterMenu(false); }}
-                                        className={`block w-full text-left px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider hover:bg-[#F1F5F9] ${severityFilter === s ? 'text-[#0F1623] bg-[#F1F5F9]' : 'text-[#64748B]'}`}
-                                    >{s}</button>
+                                    <button
+                                        key={s}
+                                        onClick={() => { setSeverityFilter(s); setShowFilterMenu(false); }}
+                                        className={`block w-full text-left px-3 py-2 text-xs font-medium transition-colors hover:bg-muted ${severityFilter === s ? 'text-foreground bg-muted' : 'text-muted-foreground'}`}
+                                    >
+                                        {s}
+                                    </button>
                                 ))}
                             </div>
                         )}
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm table-rows-animate">
+                    <table className="w-full text-sm table-rows-animate data-table">
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Notification ID</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Severity</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Description</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity Link</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Case Link</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Timestamp</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Status</th>
-                                <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Action</th>
+                            <tr>
+                                <th className="text-left">Notification ID</th>
+                                <th className="text-left">Severity</th>
+                                <th className="text-left">Description</th>
+                                <th className="text-left">Entity Link</th>
+                                <th className="text-left">Case Link</th>
+                                <th className="text-left">Timestamp</th>
+                                <th className="text-left">Status</th>
+                                <th className="text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E2E8F0] relative">
+                        <tbody className="divide-y divide-border relative">
                             {isLoading && (
                                 <tr>
                                     <td colSpan={8} className="p-0">

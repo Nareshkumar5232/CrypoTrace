@@ -50,7 +50,7 @@ function SeverityBadge({ severity }: { severity: string }) {
    ═══════════════════════════════════════════ */
 function InteractionsPanel({ interactions }: { interactions: WalletInteraction[] }) {
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3 flex items-center gap-2">
         <Users className="h-4 w-4 text-[#64748B]" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Most Interacting Wallets</h3>
@@ -96,7 +96,7 @@ function InteractionsPanel({ interactions }: { interactions: WalletInteraction[]
 function ClustersPanel({ clusters }: { clusters: WalletCluster[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3 flex items-center gap-2">
         <Layers className="h-4 w-4 text-[#64748B]" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Wallet Clusters</h3>
@@ -164,7 +164,7 @@ function ClustersPanel({ clusters }: { clusters: WalletCluster[] }) {
    ═══════════════════════════════════════════ */
 function PatternsPanel({ patterns }: { patterns: SuspiciousPattern[] }) {
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-amber-500" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Detected Suspicious Patterns</h3>
@@ -202,7 +202,7 @@ function TransactionTimeline({ transactions }: { transactions: TracedTransaction
   const hopColors: Record<number, string> = { 1: "bg-blue-500", 2: "bg-amber-500", 3: "bg-red-500" };
 
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3 flex items-center gap-2">
         <Clock className="h-4 w-4 text-[#64748B]" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Transaction Timeline</h3>
@@ -246,7 +246,7 @@ function WorkflowPanel({ steps }: { steps: InvestigationWorkflowStep[] }) {
   };
 
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3 flex items-center gap-2">
         <Activity className="h-4 w-4 text-[#64748B]" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Investigation Workflow</h3>
@@ -288,7 +288,7 @@ function MultiHopTable({ transactions }: { transactions: TracedTransaction[] }) 
   });
 
   return (
-    <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border">
+    <div className="section-box">
       <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-border bg-[#F8FAFC] dark:bg-muted/30 px-4 py-3">
         <div className="flex items-center gap-2">
           <Network className="h-4 w-4 text-[#64748B]" />
@@ -459,7 +459,7 @@ export function InvestigationAnalysis() {
           <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-foreground">INVESTIGATION ANALYSIS</h1>
           <p className="text-xs uppercase tracking-wider text-[#64748B]">No investigation selected. Choose a case or provide a wallet target.</p>
         </div>
-        <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border p-6">
+        <div className="section-box p-6">
           <button onClick={() => navigate("/")} className="inline-flex items-center gap-2 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-colors">
             <ChevronLeft className="h-3.5 w-3.5" /> Back to Dashboard
           </button>
@@ -506,7 +506,7 @@ export function InvestigationAnalysis() {
           { label: "High Risk Connections", value: result.summary.highRiskConnections },
           { label: "Flagged Patterns", value: result.summary.flaggedPatterns },
         ].map((m) => (
-          <div key={m.label} className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border p-4 flex flex-col">
+          <div key={m.label} className="section-box p-4 flex flex-col">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">{m.label}</span>
             <span className="text-2xl font-bold text-[#0F172A] dark:text-foreground">{m.value}</span>
           </div>
@@ -514,7 +514,7 @@ export function InvestigationAnalysis() {
       </div>
 
       {/* ── Risk Indicator for target wallet ── */}
-      <div className="bg-white dark:bg-card border border-[#E2E8F0] dark:border-border p-4 flex items-center justify-between">
+      <div className="section-box p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Shield className="h-6 w-6 text-red-500" />
           <div>

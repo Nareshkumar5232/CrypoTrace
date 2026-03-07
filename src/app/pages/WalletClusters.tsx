@@ -34,9 +34,9 @@ export function WalletClusters() {
     };
 
     const renderClusterList = () => (
-        <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
-            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Cluster Registry</h2>
+        <div className="dash-card !p-0 overflow-hidden transition-smooth">
+            <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                <h2 className="section-heading">Cluster Registry</h2>
                 <div className="flex gap-2">
                     <div className="relative">
                         <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -60,15 +60,15 @@ export function WalletClusters() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm table-rows-animate">
+                <table className="w-full text-sm table-rows-animate data-table">
                     <thead>
-                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Cluster ID</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Total Volume</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Entity Count</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Last Active</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]"></th>
+                        <tr>
+                            <th className="text-left">Cluster ID</th>
+                            <th className="text-left">Risk Level</th>
+                            <th className="text-right">Total Volume</th>
+                            <th className="text-right">Entity Count</th>
+                            <th className="text-left">Last Active</th>
+                            <th className="text-right"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E2E8F0] relative">
@@ -165,7 +165,7 @@ export function WalletClusters() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Total Volume
                         </span>
@@ -173,7 +173,7 @@ export function WalletClusters() {
                             {cluster.total_volume || cluster.totalVolume || '0.00'}
                         </span>
                     </div>
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Entity Count
                         </span>
@@ -183,19 +183,17 @@ export function WalletClusters() {
                     </div>
                 </div>
 
-                <div className="bg-white border border-[#E2E8F0]">
-                    <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                            Linked Entities
-                        </h2>
+                <div className="dash-card !p-0 overflow-hidden">
+                    <div className="border-b-2 border-border bg-muted/30 px-6 py-4">
+                        <h2 className="section-heading">Linked Entities</h2>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-sm data-table">
                             <thead>
-                                <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
-                                    <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Identifier Address</th>
-                                    <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Cluster Role</th>
-                                    <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Associated Date</th>
+                                <tr>
+                                    <th className="text-left">Identifier Address</th>
+                                    <th className="text-left">Cluster Role</th>
+                                    <th className="text-left">Associated Date</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E2E8F0]">
@@ -234,7 +232,7 @@ export function WalletClusters() {
 
             {/* Risk Level Update Dialog */}
             <Dialog open={showRiskModal} onOpenChange={setShowRiskModal}>
-                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0] dialog-content-animate dark:bg-card dark:border-border">
+                <DialogContent className="sm:max-w-[400px] section-box dialog-content-animate">
                     <DialogHeader>
                         <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Update Cluster Risk Level</DialogTitle>
                     </DialogHeader>

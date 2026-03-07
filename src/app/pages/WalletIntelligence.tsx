@@ -48,9 +48,9 @@ export function WalletIntelligence() {
     };
 
     const renderWalletList = () => (
-        <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
-            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Entity Intelligence Database</h2>
+        <div className="dash-card !p-0 overflow-hidden transition-smooth">
+            <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
+                <h2 className="section-heading">Entity Intelligence Database</h2>
                 <div className="flex gap-2">
                     <div className="relative">
                         <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -77,16 +77,16 @@ export function WalletIntelligence() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm table-rows-animate">
+                <table className="w-full text-sm table-rows-animate data-table">
                     <thead>
-                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity ID</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Address</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity Type</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Score</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Balance</th>
-                            <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]"></th>
+                        <tr>
+                            <th className="text-left">Entity ID</th>
+                            <th className="text-left">Address</th>
+                            <th className="text-left">Entity Type</th>
+                            <th className="text-left">Risk Score</th>
+                            <th className="text-left">Risk Level</th>
+                            <th className="text-right">Balance</th>
+                            <th className="text-right"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E2E8F0] relative">
@@ -203,7 +203,7 @@ export function WalletIntelligence() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-4">
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Risk Score
                         </span>
@@ -211,7 +211,7 @@ export function WalletIntelligence() {
                             {wallet.risk_score || wallet.riskScore || 0} <span className="text-[10px] font-mono font-normal text-[#64748B]">/ 100</span>
                         </div>
                     </div>
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Current Balance
                         </span>
@@ -219,7 +219,7 @@ export function WalletIntelligence() {
                             {wallet.balance_usd ? `$${wallet.balance_usd}` : wallet.balance || '0.00'}
                         </span>
                     </div>
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Linked Cases
                         </span>
@@ -227,7 +227,7 @@ export function WalletIntelligence() {
                             {wallet.cases || 0}
                         </span>
                     </div>
-                    <div className="bg-white border border-[#E2E8F0] p-4 flex flex-col">
+                    <div className="section-box p-4 flex flex-col">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
                             Related Clusters
                         </span>
@@ -237,7 +237,7 @@ export function WalletIntelligence() {
                     </div>
                 </div>
 
-                <div className="bg-white border border-[#E2E8F0]">
+                <div className="section-box">
                     <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
                         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                             Recent Transactions
@@ -310,7 +310,7 @@ export function WalletIntelligence() {
 
             {/* Risk Update Dialog */}
             <Dialog open={showRiskModal} onOpenChange={setShowRiskModal}>
-                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                <DialogContent className="sm:max-w-[400px] section-box">
                     <DialogHeader>
                         <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Update Risk Score</DialogTitle>
                     </DialogHeader>
