@@ -32,7 +32,7 @@ export function AuditLogs() {
         toast.success(`Exported ${filteredLogs.length} log entries.`);
     };
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                 <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
                     SYSTEM AUDIT LOGS
@@ -42,8 +42,8 @@ export function AuditLogs() {
                 </p>
             </div>
 
-            <div className="bg-white border border-[#E2E8F0]">
-                <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
+            <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
+                <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
                     <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] flex items-center gap-2">
                         AUDIT TRAIL
                     </h2>
@@ -55,7 +55,7 @@ export function AuditLogs() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="SEARCH LOGS BY USER OR ENTITY..."
-                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                             />
                         </div>
                         <div className="relative">
@@ -72,16 +72,16 @@ export function AuditLogs() {
                                 <option value="System">System</option>
                             </select>
                         </div>
-                        <button onClick={handleExportLog} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
+                        <button onClick={handleExportLog} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-smooth-fast">
                             <Download className="mr-1.5 h-3 w-3" />
                             Export Log
                         </button>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm table-rows-animate">
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
+                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Log ID</th>
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Timestamp (UTC)</th>
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">User / System</th>

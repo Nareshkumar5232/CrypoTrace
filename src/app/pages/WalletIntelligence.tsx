@@ -59,7 +59,7 @@ export function WalletIntelligence() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="SEARCH IDENTIFIER..."
-                            className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                            className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                         />
                     </div>
                     <button
@@ -77,9 +77,9 @@ export function WalletIntelligence() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm table-rows-animate">
                     <thead>
-                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
+                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity ID</th>
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Address</th>
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Entity Type</th>

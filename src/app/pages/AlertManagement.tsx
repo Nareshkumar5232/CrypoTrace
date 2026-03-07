@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { Filter, Search, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useAlerts, useResolveAlert, useEscalateAlert } from "../../hooks/useAlerts";
 import { Switch } from "../components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+
+const pageVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
 
 export function AlertManagement() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -30,17 +36,27 @@ export function AlertManagement() {
     };
 
     return (
-        <div className="space-y-6 page-enter-content">
-            <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
+        <motion.div
+            className="space-y-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+            }}
+        >
+            <motion.div
+                className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4"
+                variants={pageVariants}
+            >
                 <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
                     INTELLIGENCE NOTIFICATIONS
                 </h1>
                 <p className="text-xs uppercase tracking-wider text-[#64748B]">
                     Automated risk triggers and investigative workflows
                 </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-white border border-[#E2E8F0]">
+            <motion.div className="bg-white border border-[#E2E8F0]" variants={pageVariants}>
                 <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
                     <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] flex items-center gap-2">
                         ACTIVE NOTIFICATIONS
@@ -53,7 +69,7 @@ export function AlertManagement() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="SEARCH NOTIFICATION ID OR ENTITY..."
-                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                             />
                         </div>
                         <div className="flex items-center gap-2 border border-[#E2E8F0] bg-white px-2 py-1 rounded">
@@ -77,7 +93,7 @@ export function AlertManagement() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm table-rows-animate">
                         <thead>
                             <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Notification ID</th>
@@ -166,7 +182,7 @@ export function AlertManagement() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </motion.div>
 
             {/* ── Resolve Confirmation Modal ─────────────────────── */}
             <Dialog open={!!confirmResolve} onOpenChange={() => setConfirmResolve(null)}>
@@ -189,6 +205,6 @@ export function AlertManagement() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </motion.div>
     );
 }

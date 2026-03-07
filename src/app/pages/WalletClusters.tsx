@@ -34,9 +34,9 @@ export function WalletClusters() {
     };
 
     const renderClusterList = () => (
-        <div className="bg-white border border-[#E2E8F0]">
-            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Cluster Registry</h2>
+        <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
+            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Cluster Registry</h2>
                 <div className="flex gap-2">
                     <div className="relative">
                         <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -45,7 +45,7 @@ export function WalletClusters() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="SEARCH CLUSTER ID..."
-                            className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                            className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                         />
                     </div>
                     <button
@@ -60,9 +60,9 @@ export function WalletClusters() {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm table-rows-animate">
                     <thead>
-                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
+                        <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Cluster ID</th>
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Risk Level</th>
                             <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Total Volume</th>
@@ -218,10 +218,10 @@ export function WalletClusters() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             {!selectedClusterId && (
                 <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
-                    <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
+                    <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-foreground">
                         CLUSTER MANAGEMENT
                     </h1>
                     <p className="text-xs uppercase tracking-wider text-[#64748B]">
@@ -234,7 +234,7 @@ export function WalletClusters() {
 
             {/* Risk Level Update Dialog */}
             <Dialog open={showRiskModal} onOpenChange={setShowRiskModal}>
-                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0]">
+                <DialogContent className="sm:max-w-[400px] bg-white border border-[#E2E8F0] dialog-content-animate dark:bg-card dark:border-border">
                     <DialogHeader>
                         <DialogTitle className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Update Cluster Risk Level</DialogTitle>
                     </DialogHeader>
@@ -242,7 +242,8 @@ export function WalletClusters() {
                         <select
                             value={riskChoice}
                             onChange={(e) => setRiskChoice(e.target.value)}
-                            className="w-full rounded border border-[#E2E8F0] px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#0F1623]"
+                            className="w-full rounded border border-[#E2E8F0] px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#0F1623] transition-smooth input-glow"
+                            aria-label="Risk level"
                         >
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>

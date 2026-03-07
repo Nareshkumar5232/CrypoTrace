@@ -34,6 +34,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -273,4 +274,23 @@ body {
 /* Smooth scroll for main content */
 main {
   scroll-behavior: smooth;
+}
+
+/* ── Global: all interactive elements get transitions ── */
+button:not(:disabled),
+a[href],
+input,
+select,
+textarea,
+[role="button"] {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Cards and bordered panels: consistent hover */
+[class*="border"][class*="bg-"]:hover {
+  transition: box-shadow 0.25s ease, border-color 0.2s ease;
 }

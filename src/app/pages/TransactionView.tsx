@@ -88,9 +88,9 @@ export function TransactionView() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm table-rows-animate">
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left">
+                            <tr className="border-b border-[#E2E8F0] bg-[#F1F5F9] text-left dark:bg-muted/20 dark:border-border">
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">TX ID</th>
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Date/Time (UTC)</th>
                                 <th className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Direction</th>
@@ -124,7 +124,7 @@ export function TransactionView() {
                                 </tr>
                             )}
                             {!isLoading && filteredTx.map((tx: any) => (
-                                <tr key={tx.id}>
+                                <tr key={tx.id} className="table-row-hover">
                                     <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{tx.id || tx.tx_hash}</td>
                                     <td className="px-3 py-1.5 text-xs text-[#0F172A]">{tx.date || tx.timestamp || tx.created_at}</td>
                                     <td className="px-3 py-1.5">

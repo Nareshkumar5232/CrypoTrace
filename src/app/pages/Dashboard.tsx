@@ -3,9 +3,16 @@ import { TnLoader } from "../components/TnLoader";
 import { useDashboardMetrics } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router";
 import { useState, useCallback } from "react";
+import { motion } from "motion/react";
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Sector } from "recharts";
 import { useInvestigationStore } from "../../store/investigationStore";
 import { toast } from "sonner";
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 50 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+};
 
 /* ─── Realistic chart datasets ─── */
 const activityDataSets: Record<string, { label: string; data: { label: string; flagged: number; total: number }[] }> = {
@@ -103,8 +110,9 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string }> = 
 
 function StatusBadge({ status }: { status: string }) {
     const cfg = statusConfig[status] || statusConfig["Open"];
+    const isAlert = status === "Escalated" || status === "Open";
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-smooth ${cfg.bg} ${cfg.text} ${isAlert ? "badge-pulse" : ""}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
             {status}
         </span>
@@ -181,9 +189,19 @@ export function Dashboard() {
     const chartData = activityDataSets[timeRange].data;
 
     return (
-        <div className="space-y-8 page-enter-content">
+        <motion.div
+            className="space-y-8"
+            initial="initial"
+            animate="animate"
+            variants={{
+                animate: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
+            }}
+        >
             {/* ── Dashboard Header ── */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <motion.div
+                className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+                variants={fadeInUp}
+            >
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">
                         Investigation Intelligence Dashboard
@@ -193,20 +211,35 @@ export function Dashboard() {
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button onClick={() => navigate("/cases")} className="dash-btn-primary">
+                    <motion.button
+                        onClick={() => navigate("/cases")}
+                        className="dash-btn-primary"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <Plus className="h-4 w-4" /> New Case
-                    </button>
-                    <button onClick={() => navigate("/wallets")} className="dash-btn-secondary">
+                    </motion.button>
+                    <motion.button
+                        onClick={() => navigate("/wallets")}
+                        className="dash-btn-secondary"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <Wallet className="h-4 w-4" /> Track Wallet
-                    </button>
-                    <button onClick={() => navigate("/audit-logs")} className="dash-btn-secondary">
+                    </motion.button>
+                    <motion.button
+                        onClick={() => navigate("/audit-logs")}
+                        className="dash-btn-secondary"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <FileText className="h-4 w-4" /> Reports
-                    </button>
+                    </motion.button>
                 </div>
-            </div>
+            </motion.div>
 
             {/* ── Suspicious Wallet Investigation Entry ── */}
-            <div className="dash-card !p-0 overflow-hidden transition-smooth">
+            <motion.div variants={fadeInUp} className="dash-card !p-0 overflow-hidden transition-smooth">
                 <div className="flex items-center gap-3 px-6 pt-5 pb-2">
                     <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center">
                         <Crosshair className="h-4.5 w-4.5 text-red-600 dark:text-red-400" />
@@ -237,7 +270,7 @@ export function Dashboard() {
                         Start Investigation
                     </button>
                 </div>
-            </div>
+            </motion.div>
 
             {/* ── Error Alert ── */}
             {isError && (
@@ -258,11 +291,17 @@ export function Dashboard() {
             )}
 
             {/* ── Metrics Cards ── */}
-            <div className="grid gap-6 md:grid-cols-3">
+            <motion.div className="grid gap-6 md:grid-cols-3" variants={fadeInUp}>
                 {kpiData.map((kpi) => {
                     const Icon = kpi.icon;
                     return (
-                        <div key={kpi.title} className="dash-card group transition-smooth hover-lift">
+                        <motion.div
+                            key={kpi.title}
+                            className="dash-card group transition-smooth hover-lift"
+                            variants={fadeInUp}
+                            whileHover={{ y: -8, scale: 1.02 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
                             <div className="flex items-start justify-between">
                                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${kpi.iconBg}`}>
                                     <Icon className="h-5 w-5" />
@@ -278,13 +317,13 @@ export function Dashboard() {
                                 </p>
                                 <p className="text-sm text-muted-foreground mt-1">{kpi.title}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     );
                 })}
-            </div>
+            </motion.div>
 
             {/* ── Context Controls ── */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <motion.div className="flex flex-col sm:flex-row items-start sm:items-center gap-3" variants={fadeInUp}>
                 <div className="chart-filter-group">
                     {(["24h", "7d", "30d"] as const).map((r) => (
                         <button key={r} onClick={() => setTimeRange(r)} className={`chart-filter-btn ${timeRange === r ? "active" : ""}`}>
@@ -298,12 +337,15 @@ export function Dashboard() {
                     </select>
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 </div>
-            </div>
+            </motion.div>
 
             {/* ── Analytics Charts ── */}
-            <div className="grid gap-6 lg:grid-cols-5">
+            <motion.div className="grid gap-6 lg:grid-cols-5" variants={fadeInUp}>
                 {/* Area Chart: Transaction Risk Activity — 3 cols */}
-                <div className="dash-card lg:col-span-3 !p-0 overflow-hidden transition-smooth">
+                <motion.div
+                    className="dash-card lg:col-span-3 !p-0 overflow-hidden transition-smooth"
+                    whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.1)" }}
+                >
                     <div className="flex items-start justify-between px-6 pt-6 pb-2">
                         <div className="flex items-center gap-3">
                             <div className="h-9 w-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -335,10 +377,13 @@ export function Dashboard() {
                             </ResponsiveContainer>
                         </div>
                     )}
-                </div>
+                </motion.div>
 
                 {/* Donut Chart: Risk Distribution — 2 cols */}
-                <div className="dash-card lg:col-span-2 !p-0 overflow-hidden transition-smooth">
+                <motion.div
+                    className="dash-card lg:col-span-2 !p-0 overflow-hidden transition-smooth"
+                    whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.1)" }}
+                >
                     <div className="flex items-start gap-3 px-6 pt-6 pb-2">
                         <div className="h-9 w-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
                             <PieIcon className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
@@ -394,11 +439,11 @@ export function Dashboard() {
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
 
             {/* ── Investigations Table ── */}
-            <div className="dash-card !p-0 overflow-hidden transition-smooth">
+            <motion.div className="dash-card !p-0 overflow-hidden transition-smooth" variants={fadeInUp}>
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                     <h3 className="text-sm font-semibold text-foreground">Active Investigations</h3>
                     <div className="flex items-center gap-2">
@@ -444,10 +489,10 @@ export function Dashboard() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </motion.div>
 
             {/* ── Audit Activity Feed ── */}
-            <div className="dash-card transition-smooth">
+            <motion.div className="dash-card transition-smooth" variants={fadeInUp}>
                 <h3 className="text-sm font-semibold text-foreground mb-5">System Audit Trail</h3>
                 <div className="space-y-4">
                     {isLoading && <TnLoader text="Loading audit trail..." />}
@@ -483,7 +528,7 @@ export function Dashboard() {
                         </div>
                     ))}
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

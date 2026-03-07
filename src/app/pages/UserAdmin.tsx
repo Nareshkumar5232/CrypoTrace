@@ -39,7 +39,7 @@ export function UserAdmin() {
         setConfirmToggle(null);
     };
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                 <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
                     PERSONNEL & ROLE ADMINISTRATION
@@ -52,9 +52,9 @@ export function UserAdmin() {
             <div className="grid gap-6 lg:grid-cols-3">
                 {/* Roles Summary */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white border border-[#E2E8F0] h-full">
-                        <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
+                    <div className="bg-white border border-[#E2E8F0] h-full transition-smooth hover-lift dark:bg-card dark:border-border">
+                        <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
+                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">
                                 SYSTEM ROLES
                             </h2>
                         </div>

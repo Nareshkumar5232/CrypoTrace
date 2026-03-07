@@ -1,13 +1,14 @@
 import { Outlet } from "react-router";
 import { Header } from "./Header";
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import tnLogo from "../../Tamil_Nadu_State.webp";
 
 export function RootLayout() {
     const [showSplash, setShowSplash] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => setShowSplash(false), 0);
+        const timer = setTimeout(() => setShowSplash(false), 2200);
         return () => clearTimeout(timer);
     }, []);
 
@@ -25,9 +26,14 @@ export function RootLayout() {
         <div className="h-screen bg-background overflow-hidden">
             <Header />
             <main className="mt-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden">
-                <div className="mx-auto w-full max-w-[1200px] p-8 page-enter">
+                <motion.div
+                    className="mx-auto w-full max-w-[1200px] p-8"
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
                     <Outlet />
-                </div>
+                </motion.div>
             </main>
         </div>
     );

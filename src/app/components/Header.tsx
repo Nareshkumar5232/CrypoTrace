@@ -144,8 +144,8 @@ export function Header() {
 
             {/* Mobile dropdown panel */}
             {mobileOpen && (
-                <div ref={mobileRef} className="glass-mobile-menu fixed top-16 left-0 right-0 z-40 lg:hidden">
-                    <nav className="flex flex-col p-4 gap-1">
+                <div ref={mobileRef} className="glass-mobile-menu fixed top-16 left-0 right-0 z-40 lg:hidden animate-fade-in-down">
+                    <nav className="flex flex-col p-4 gap-1 list-stagger">
                         {navItems.map((item) => {
                             const active = isActive(item.path);
                             const Icon = item.icon;
@@ -153,7 +153,7 @@ export function Header() {
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${active
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-smooth-fast ${active
                                         ? "text-navbar-accent bg-navbar-accent/10"
                                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                         }`}
