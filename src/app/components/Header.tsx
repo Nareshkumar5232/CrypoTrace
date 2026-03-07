@@ -62,7 +62,7 @@ export function Header() {
 
     return (
         <>
-            <header className="glass-navbar fixed top-0 left-0 right-0 z-50 h-16">
+            <header className="glass-navbar fixed top-0 left-0 w-full z-[1000] h-16">
                 <div className="flex h-full items-center justify-between px-8 max-w-[1920px] mx-auto">
                     {/* Left: Logo */}
                     <Link to="/" className="flex items-center gap-3 shrink-0">

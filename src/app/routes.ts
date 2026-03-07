@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
         Component: RootLayout,
         children: [
           { index: true, Component: Dashboard },
+          { path: "dashboard", Component: Dashboard },
           { path: "cases", Component: CaseManagement },
           { path: "wallets", Component: WalletIntelligence },
           { path: "transactions", Component: TransactionView },

@@ -43,6 +43,34 @@ A production-grade cryptocurrency fund tracing intelligence platform built with 
 
 The application is ready to run. Simply start the development server to explore the platform.
 
+## Full Stack Run (Frontend + Backend)
+
+The frontend is now wired to backend routes under `/api` with Vite proxy support.
+
+1. Start backend API (terminal 1):
+
+```bash
+cd backend
+npm install
+# Copy backend/.env.example to backend/.env and fill in PostgreSQL + JWT values
+npm run dev
+```
+
+2. Start frontend app (terminal 2):
+
+```bash
+npm install
+npm run dev
+```
+
+3. Optional: direct API URL override (if not using Vite proxy)
+
+Create `.env` in project root:
+
+```bash
+VITE_API_URL=http://localhost:5000/api
+```
+
 
 ## Architecture
 

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import { Header } from "./Header";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import tnLogo from "../../Tamil_Nadu_State.webp";
 
 export function RootLayout() {
@@ -13,19 +13,19 @@ export function RootLayout() {
 
     if (showSplash) {
         return (
-            <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0B1120] z-[100] animate-in fade-in duration-500">
-                <img src={tnLogo} alt="Tamil Nadu State Logo" className="w-32 animate-pulse mb-8" />
-                <h1 className="text-white tracking-widest text-2xl font-bold uppercase mb-2">Crypto Intelligence System</h1>
-                <p className="text-[#06B6D4] text-xs font-bold uppercase tracking-widest animate-pulse">Initializing Secure Dashboard...</p>
+            <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0B1120]">
+                <img src={tnLogo} alt="Tamil Nadu State Logo" className="mb-8 w-32" />
+                <h1 className="mb-2 text-2xl font-bold uppercase tracking-widest text-white">Crypto Intelligence System</h1>
+                <p className="text-xs font-bold uppercase tracking-widest text-[#06B6D4]">Initializing Secure Dashboard...</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="h-screen bg-background overflow-hidden">
             <Header />
-            <main className="pt-16">
-                <div className="p-8 max-w-[1920px] mx-auto">
+            <main className="mt-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden">
+                <div className="mx-auto w-full max-w-[1200px] p-8">
                     <Outlet />
                 </div>
             </main>

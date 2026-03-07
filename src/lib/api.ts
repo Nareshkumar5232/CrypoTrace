@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// Assuming vite provides the env variable, or default to standard /api/v1
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+// Backend mounts routes under /api in this repository.
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const api = axios.create({
     baseURL: API_URL,

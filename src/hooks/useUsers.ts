@@ -1,10 +1,58 @@
 import { useAppStore } from '../store/appStore';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
+
+const mapRole = (role?: string) => {
+    const normalized = (role || '').toUpperCase();
+    if (normalized.includes('ADMIN')) return 'Administrator';
+    if (normalized.includes('ANALYST')) return 'Senior Analyst';
+    if (normalized.includes('INVESTIGATOR')) return 'Analyst';
+    return 'Read-Only';
+};
 
 export const useUsers = (_filters?: any) => {
-    const users = useAppStore((s) => s.users);
-    return { data: users, isLoading: false, isError: false };
+    const fallbackUsers = useAppStore((s) => s.users);
+    const [data, setData] = useState<any[]>(fallbackUsers);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const load = async () => {
+            try {
+                const response = await api.get('/users');
+                const mapped = (response.data || []).map((item: any, index: number) => ({
+                    id: item.id,
+                    employee_id: item.email || `EMP-${String(index + 1).padStart(3, '0')}`,
+                    name: item.name,
+                    department: item.department || 'Investigations',
+                    role: mapRole(item.role),
+                    status: item.status || 'Active',
+                }));
+
+                if (!cancelled) {
+                    setData(mapped.length > 0 ? mapped : fallbackUsers);
+                    setIsError(false);
+                }
+            } catch {
+                if (!cancelled) {
+                    setData(fallbackUsers);
+                    setIsError(false);
+                }
+            } finally {
+                if (!cancelled) setIsLoading(false);
+            }
+        };
+
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [fallbackUsers]);
+
+    return { data, isLoading, isError };
 };
 
 export const useCreateUser = () => {

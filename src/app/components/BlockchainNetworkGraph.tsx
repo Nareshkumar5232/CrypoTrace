@@ -106,7 +106,7 @@ export function BlockchainNetworkGraph({
       for (const entry of entries) {
         setDimensions({
           width: entry.contentRect.width,
-          height: Math.max(500, entry.contentRect.height),
+          height: 500,
         });
       }
     });
@@ -285,6 +285,7 @@ export function BlockchainNetworkGraph({
         ref={containerRef}
         className="w-full h-[500px] rounded-lg overflow-hidden"
         style={{
+          height: "500px",
           background: "radial-gradient(circle at center, #0A0A0A 0%, #000000 100%)",
           border: "1px solid #1F1F1F",
         }}

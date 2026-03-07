@@ -381,7 +381,7 @@ export function Dashboard() {
                             <div className="w-1/2 flex flex-col gap-3.5 pl-4">
                                 {riskDistData.map((d, i) => (
                                     <button key={d.name} onMouseEnter={() => setActiveDonutIdx(i)} className="flex items-center gap-2.5 text-left group">
-                                        <span className="h-2.5 w-2.5 rounded-[3px] transition-transform duration-200 group-hover:scale-125" style={{ background: d.color }} />
+                                        <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: d.color }} />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[11px] text-muted-foreground leading-tight">{d.name}</p>
                                             <div className="flex items-baseline gap-1.5">
