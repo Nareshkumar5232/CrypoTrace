@@ -15,7 +15,7 @@ export function SystemSettings() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                 <div className="flex items-center justify-between">
                     <div>

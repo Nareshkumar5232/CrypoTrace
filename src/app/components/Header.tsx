@@ -62,10 +62,10 @@ export function Header() {
 
     return (
         <>
-            <header className="glass-navbar fixed top-0 left-0 w-full z-[1000] h-16">
+            <header className="glass-navbar fixed top-0 left-0 w-full z-[1000] h-16 transition-smooth">
                 <div className="flex h-full items-center justify-between px-8 max-w-[1920px] mx-auto">
                     {/* Left: Logo */}
-                    <Link to="/" className="flex items-center gap-3 shrink-0">
+                    <Link to="/" className="flex items-center gap-3 shrink-0 transition-smooth-fast hover:opacity-90">
                         <img src={tnLogo} alt="Logo" className="h-8 w-8 object-contain" />
                         <span className="text-[15px] font-bold tracking-tight text-foreground hidden sm:block">
                             Crypto<span className="text-navbar-accent">Trace</span>
@@ -80,7 +80,7 @@ export function Header() {
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`glass-nav-link group relative px-3.5 py-2 text-[14px] font-medium tracking-wide transition-colors duration-200 ${active
+                                    className={`glass-nav-link group relative px-3.5 py-2 text-[14px] font-medium tracking-wide transition-colors duration-300 ease-out ${active
                                         ? "text-navbar-accent"
                                         : "text-muted-foreground hover:text-foreground"
                                         }`}
@@ -88,7 +88,7 @@ export function Header() {
                                     {item.label}
                                     {/* Animated underline */}
                                     <span
-                                        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200 ease-out ${active ? "w-full bg-navbar-accent shadow-[0_0_6px_var(--navbar-accent-glow)]" : "w-0 bg-navbar-accent group-hover:w-full"
+                                        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-300 ease-out ${active ? "w-full bg-navbar-accent shadow-[0_0_6px_var(--navbar-accent-glow)]" : "w-0 bg-navbar-accent group-hover:w-full"
                                             }`}
                                     />
                                 </Link>

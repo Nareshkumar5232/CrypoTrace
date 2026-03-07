@@ -30,7 +30,7 @@ export function AlertManagement() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                 <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
                     INTELLIGENCE NOTIFICATIONS
@@ -60,7 +60,7 @@ export function AlertManagement() {
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[#0F172A]">Auto-Refresh</span>
                             <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
                         </div>
-                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors"
+                        <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-smooth-fast"
                             onClick={() => setShowFilterMenu(!showFilterMenu)}>
                             <Filter className="mr-1.5 h-3 w-3" />
                             {severityFilter === 'All' ? 'Filter' : severityFilter}
@@ -113,7 +113,7 @@ export function AlertManagement() {
                                 </tr>
                             )}
                             {!isLoading && (filteredAlerts || []).map((alert: any) => (
-                                <tr key={alert.id}>
+                                <tr key={alert.id} className="table-row-hover">
                                     <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{alert.id}</td>
                                     <td className="px-3 py-1.5">
                                         <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase ${alert.severity === 'Critical' ? 'text-[#EF4444]' :

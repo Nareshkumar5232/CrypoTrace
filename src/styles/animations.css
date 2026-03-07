@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════════════
+   Professional UI Animations — CryptoTrace
+   Subtle, performant, accessibility-friendly (prefers-reduced-motion)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeInUp { from { opacity: 0; transform: none; } to { opacity: 1; transform: none; } }
+  @keyframes fadeInDown { from { opacity: 0; transform: none; } to { opacity: 1; transform: none; } }
+  @keyframes slideInRight { from { opacity: 0; transform: none; } to { opacity: 1; transform: none; } }
+  @keyframes scaleIn { from { opacity: 0; transform: none; } to { opacity: 1; transform: none; } }
+  @keyframes slideInFromBottom { from { opacity: 0; transform: none; } to { opacity: 1; transform: none; } }
+}
+
+/* ── Animation utility classes ────────────────────────────────── */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.35s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.35s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideInFromBottom 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger delays for list/grid children */
+.animate-stagger-1 { animation-delay: 0.05s; }
+.animate-stagger-2 { animation-delay: 0.1s; }
+.animate-stagger-3 { animation-delay: 0.15s; }
+.animate-stagger-4 { animation-delay: 0.2s; }
+.animate-stagger-5 { animation-delay: 0.25s; }
+.animate-stagger-6 { animation-delay: 0.3s; }
+.animate-stagger-7 { animation-delay: 0.35s; }
+.animate-stagger-8 { animation-delay: 0.4s; }
+.animate-stagger-9 { animation-delay: 0.45s; }
+.animate-stagger-10 { animation-delay: 0.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stagger-1, .animate-stagger-2, .animate-stagger-3, .animate-stagger-4,
+  .animate-stagger-5, .animate-stagger-6, .animate-stagger-7, .animate-stagger-8,
+  .animate-stagger-9, .animate-stagger-10 { animation-delay: 0s; }
+}
+
+/* Initial state for animated elements (avoid flash) */
+.animate-fade-in,
+.animate-fade-in-up,
+.animate-fade-in-down,
+.animate-slide-in-right,
+.animate-scale-in,
+.animate-slide-up {
+  opacity: 0;
+}
+
+/* ── Transition utilities (for hover/focus) ────────────────────── */
+.transition-smooth {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.transition-smooth-fast {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-smooth,
+  .transition-smooth-fast {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* Card hover lift */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift:hover {
+    transform: none;
+  }
+}
+
+/* Table row hover */
+.table-row-hover {
+  transition: background-color 0.15s ease;
+}
+
+/* Page content wrapper — use on main content area */
+.page-enter {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-enter-content > * {
+  opacity: 0;
+  animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-enter-content > *:nth-child(1) { animation-delay: 0.05s; }
+.page-enter-content > *:nth-child(2) { animation-delay: 0.1s; }
+.page-enter-content > *:nth-child(3) { animation-delay: 0.15s; }
+.page-enter-content > *:nth-child(4) { animation-delay: 0.2s; }
+.page-enter-content > *:nth-child(5) { animation-delay: 0.25s; }
+.page-enter-content > *:nth-child(6) { animation-delay: 0.3s; }
+.page-enter-content > *:nth-child(7) { animation-delay: 0.35s; }
+.page-enter-content > *:nth-child(8) { animation-delay: 0.4s; }
+.page-enter-content > *:nth-child(9) { animation-delay: 0.45s; }
+.page-enter-content > *:nth-child(10) { animation-delay: 0.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-content > * { animation-delay: 0s !important; }
+}

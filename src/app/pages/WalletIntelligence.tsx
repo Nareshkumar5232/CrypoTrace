@@ -48,9 +48,9 @@ export function WalletIntelligence() {
     };
 
     const renderWalletList = () => (
-        <div className="bg-white border border-[#E2E8F0]">
-            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Entity Intelligence Database</h2>
+        <div className="bg-white border border-[#E2E8F0] transition-smooth dark:bg-card dark:border-border">
+            <div className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-border dark:bg-muted/30">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground">Entity Intelligence Database</h2>
                 <div className="flex gap-2">
                     <div className="relative">
                         <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
@@ -67,7 +67,7 @@ export function WalletIntelligence() {
                             setShowCriticalOnly(!showCriticalOnly);
                             setPage(1); // reset pagination on filter change
                         }}
-                        className={`inline-flex items-center justify-center rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${showCriticalOnly
+                        className={`inline-flex items-center justify-center rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-smooth-fast ${showCriticalOnly
                             ? 'bg-[#0F1623] text-white hover:bg-[#1E293B] dark:hover:bg-[#00d2a0] dark:hover:text-[#0F1623] border-[#0F1623] '
                             : 'border-[#E2E8F0] bg-white text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white'
                             }`}>
@@ -112,7 +112,7 @@ export function WalletIntelligence() {
                             </tr>
                         )}
                         {!listsLoading && (paginatedWallets || []).map((w: any) => (
-                            <tr key={w.id}>
+                            <tr key={w.id} className="table-row-hover">
                                 <td className="px-3 py-1.5 font-mono text-xs text-[#64748B]">{w.id}</td>
                                 <td className="px-3 py-1.5 text-xs text-[#0F172A] font-mono">{w.address}</td>
                                 <td className="px-3 py-1.5 text-xs font-medium text-[#0F172A]">{w.entity_type || w.type || 'Unknown'}</td>
@@ -294,7 +294,7 @@ export function WalletIntelligence() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             {!selectedWalletId && (
                 <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                     <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">

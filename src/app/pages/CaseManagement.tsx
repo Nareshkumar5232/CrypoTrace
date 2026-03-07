@@ -516,7 +516,7 @@ export function CaseManagement() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 page-enter-content">
             {!selectedCase && (
                 <div className="flex flex-col gap-1 border-b border-[#E2E8F0] pb-4">
                     <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">

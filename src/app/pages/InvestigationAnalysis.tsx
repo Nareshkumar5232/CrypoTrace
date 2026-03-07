@@ -469,24 +469,24 @@ export function InvestigationAnalysis() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter-content">
       {/* ── Header ── */}
       <div className="flex flex-col gap-1 border-b border-[#E2E8F0] dark:border-border pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => { reset(); navigate("/"); }} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-colors">
+            <button onClick={() => { reset(); navigate("/"); }} className="inline-flex items-center justify-center rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-smooth-fast">
               <ChevronLeft className="mr-1 h-3 w-3" /> Dashboard
             </button>
             <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-foreground">INVESTIGATION ANALYSIS</h1>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => scrollTo(graphRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-colors">
+            <button onClick={() => scrollTo(graphRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-smooth-fast">
               <Eye className="h-3 w-3" /> View Graph
             </button>
-            <button onClick={() => scrollTo(clusterRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-colors">
+            <button onClick={() => scrollTo(clusterRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-smooth-fast">
               <Layers className="h-3 w-3" /> View Clusters
             </button>
-            <button onClick={() => scrollTo(timelineRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-colors">
+            <button onClick={() => scrollTo(timelineRef)} className="inline-flex items-center gap-1.5 rounded border border-[#E2E8F0] dark:border-border bg-white dark:bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] dark:text-foreground hover:bg-[#F1F5F9] dark:hover:bg-muted transition-smooth-fast">
               <Clock className="h-3 w-3" /> View Timeline
             </button>
           </div>

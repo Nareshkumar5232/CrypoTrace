@@ -181,7 +181,7 @@ export function Dashboard() {
     const chartData = activityDataSets[timeRange].data;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 page-enter-content">
             {/* ── Dashboard Header ── */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
@@ -206,7 +206,7 @@ export function Dashboard() {
             </div>
 
             {/* ── Suspicious Wallet Investigation Entry ── */}
-            <div className="dash-card !p-0 overflow-hidden">
+            <div className="dash-card !p-0 overflow-hidden transition-smooth">
                 <div className="flex items-center gap-3 px-6 pt-5 pb-2">
                     <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center">
                         <Crosshair className="h-4.5 w-4.5 text-red-600 dark:text-red-400" />
@@ -225,7 +225,7 @@ export function Dashboard() {
                             onChange={(e) => setWalletInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleStartInvestigation()}
                             placeholder="Enter wallet address (e.g. 0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18)"
-                            className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-navbar-accent"
+                            className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-navbar-accent transition-smooth-fast"
                         />
                     </div>
                     <button
@@ -262,7 +262,7 @@ export function Dashboard() {
                 {kpiData.map((kpi) => {
                     const Icon = kpi.icon;
                     return (
-                        <div key={kpi.title} className="dash-card group">
+                        <div key={kpi.title} className="dash-card group transition-smooth hover-lift">
                             <div className="flex items-start justify-between">
                                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${kpi.iconBg}`}>
                                     <Icon className="h-5 w-5" />
@@ -303,7 +303,7 @@ export function Dashboard() {
             {/* ── Analytics Charts ── */}
             <div className="grid gap-6 lg:grid-cols-5">
                 {/* Area Chart: Transaction Risk Activity — 3 cols */}
-                <div className="dash-card lg:col-span-3 !p-0 overflow-hidden">
+                <div className="dash-card lg:col-span-3 !p-0 overflow-hidden transition-smooth">
                     <div className="flex items-start justify-between px-6 pt-6 pb-2">
                         <div className="flex items-center gap-3">
                             <div className="h-9 w-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -338,7 +338,7 @@ export function Dashboard() {
                 </div>
 
                 {/* Donut Chart: Risk Distribution — 2 cols */}
-                <div className="dash-card lg:col-span-2 !p-0 overflow-hidden">
+                <div className="dash-card lg:col-span-2 !p-0 overflow-hidden transition-smooth">
                     <div className="flex items-start gap-3 px-6 pt-6 pb-2">
                         <div className="h-9 w-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
                             <PieIcon className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
@@ -398,7 +398,7 @@ export function Dashboard() {
             </div>
 
             {/* ── Investigations Table ── */}
-            <div className="dash-card !p-0 overflow-hidden">
+            <div className="dash-card !p-0 overflow-hidden transition-smooth">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                     <h3 className="text-sm font-semibold text-foreground">Active Investigations</h3>
                     <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ export function Dashboard() {
                             {!isLoading && recentCases.map((c: any) => (
                                 <tr
                                     key={c.id}
-                                    className="hover:bg-muted/30 transition-colors cursor-pointer"
+                                    className="hover:bg-muted/30 transition-smooth-fast cursor-pointer table-row-hover"
                                     onClick={() => navigate(`/investigation/${encodeURIComponent(c.id)}`)}
                                 >
                                     <td className="px-6 py-3.5 font-mono text-xs text-muted-foreground">{c.id}</td>
@@ -447,7 +447,7 @@ export function Dashboard() {
             </div>
 
             {/* ── Audit Activity Feed ── */}
-            <div className="dash-card">
+            <div className="dash-card transition-smooth">
                 <h3 className="text-sm font-semibold text-foreground mb-5">System Audit Trail</h3>
                 <div className="space-y-4">
                     {isLoading && <TnLoader text="Loading audit trail..." />}
