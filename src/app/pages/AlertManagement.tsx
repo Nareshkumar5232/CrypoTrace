@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Filter, Search, Loader2 } from "lucide-react";
+import { Filter, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useAlerts, useResolveAlert, useEscalateAlert } from "../../hooks/useAlerts";
 import { Switch } from "../components/ui/switch";
@@ -62,17 +62,14 @@ export function AlertManagement() {
                         Active Notifications
                     </h2>
                     <div className="flex gap-2">
-                        <div className="relative h-9">
-                            <span className="absolute left-3 top-0 bottom-0 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-muted-foreground" aria-hidden />
-                            </span>
+                        <div className="w-56">
                             <input
                                 type="search"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search notification or entity..."
                                 aria-label="Search notifications"
-                                className="h-9 w-56 rounded-xl border border-border bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
+                                className="h-9 w-full rounded-xl border border-border bg-background px-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
                             />
                         </div>
                         <div className="flex items-center gap-2 border border-border bg-background px-3 py-1.5 rounded-xl">

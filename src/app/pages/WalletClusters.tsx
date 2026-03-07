@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Filter, Search, ChevronRight, Network, Wallet, Loader2 } from "lucide-react";
+import { Filter, ChevronRight, Network, Wallet, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useClusters, useCluster, useUpdateCluster } from "../../hooks/useClusters";
 import { useWallets } from "../../hooks/useWallets";
@@ -38,14 +38,13 @@ export function WalletClusters() {
             <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
                 <h2 className="section-heading">Cluster Registry</h2>
                 <div className="flex gap-2">
-                    <div className="relative">
-                        <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
+                    <div className="w-64">
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="SEARCH CLUSTER ID..."
-                            className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
+                            className="h-7 w-full rounded border border-[#E2E8F0] bg-white px-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                         />
                     </div>
                     <button

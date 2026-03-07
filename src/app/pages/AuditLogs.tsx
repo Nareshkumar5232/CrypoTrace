@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Filter, Search, Download, ShieldCheck, Loader2 } from "lucide-react";
+import { Filter, Download, ShieldCheck, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { toast } from "sonner";
@@ -48,14 +48,13 @@ export function AuditLogs() {
                         Audit Trail
                     </h2>
                     <div className="flex gap-2">
-                        <div className="relative">
-                            <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
+                        <div className="w-64">
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="SEARCH LOGS BY USER OR ENTITY..."
-                                className="h-7 w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
+                                className="h-7 w-full rounded border border-[#E2E8F0] bg-white px-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-smooth input-glow"
                             />
                         </div>
                         <div className="relative">

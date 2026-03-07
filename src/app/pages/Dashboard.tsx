@@ -1,4 +1,4 @@
-import { Briefcase, Wallet, ShieldAlert, FileText, Loader2, TrendingUp, TrendingDown, Plus, Search as SearchIcon, AlertTriangle, RefreshCw, Clock, User, Activity, PieChart as PieIcon, ChevronDown, Crosshair } from "lucide-react";
+import { Briefcase, Wallet, ShieldAlert, FileText, Loader2, TrendingUp, TrendingDown, Plus, AlertTriangle, RefreshCw, Clock, User, Activity, PieChart as PieIcon, ChevronDown, Crosshair } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useDashboardMetrics } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router";
@@ -268,17 +268,14 @@ export function Dashboard() {
                     </div>
                 </div>
                 <div className="px-6 pb-6 pt-3 flex items-center gap-3">
-                    <div className="relative flex-1 min-w-0 h-11">
-                        <span className="absolute left-3.5 top-0 bottom-0 flex items-center pointer-events-none">
-                            <SearchIcon className="h-4 w-4 text-muted-foreground" aria-hidden />
-                        </span>
+                    <div className="flex-1 min-w-0">
                         <input
                             type="text"
                             value={walletInput}
                             onChange={(e) => setWalletInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleStartInvestigation()}
                             placeholder="Enter wallet address (e.g. 0x742d35Cc...)"
-                            className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
+                            className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent transition-smooth input-glow"
                         />
                     </div>
                     <button
@@ -467,17 +464,14 @@ export function Dashboard() {
             <motion.div className="dash-card !p-0 overflow-hidden transition-smooth" variants={fadeInUp}>
                 <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-border bg-muted/30">
                     <h3 className="section-heading">Active Investigations</h3>
-                    <div className="relative h-9 flex items-center">
-                        <span className="absolute left-3 top-0 bottom-0 w-4 flex items-center justify-center pointer-events-none">
-                            <SearchIcon className="h-4 w-4 text-muted-foreground block shrink-0 translate-y-px" aria-hidden />
-                        </span>
+                    <div className="w-52">
                         <input
                             type="search"
                             placeholder="Search by case ID, title, status, officer..."
                             aria-label="Search cases"
                             value={caseSearchTerm}
                             onChange={(e) => setCaseSearchTerm(e.target.value)}
-                            className="h-9 w-52 rounded-xl border border-border bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent input-glow"
+                            className="h-9 w-full rounded-xl border border-border bg-background px-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-navbar-accent/30 focus:border-navbar-accent input-glow"
                         />
                     </div>
                 </div>

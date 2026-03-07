@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Filter, Search, Loader2 } from "lucide-react";
+import { Filter, Loader2 } from "lucide-react";
 import { TnLoader } from "../components/TnLoader";
 import { useUsers, useCreateUser, useToggleUserStatus } from "../../hooks/useUsers";
 import { useRoles } from "../../hooks/useRoles";
@@ -91,14 +91,13 @@ export function UserAdmin() {
                         <div className="flex flex-row flex-wrap items-center justify-between gap-3 border-b-2 border-border bg-muted/30 px-6 py-4">
                             <h2 className="section-heading">ACTIVE PERSONNEL</h2>
                             <div className="flex gap-2">
-                                <div className="relative">
-                                    <Search className="absolute left-2 top-1.5 h-3.5 w-3.5 text-[#64748B]" />
+                                <div className="w-48 lg:w-64">
                                     <input
                                         type="text"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         placeholder="SEARCH EMPLOYEE..."
-                                        className="h-7 w-48 lg:w-64 rounded border border-[#E2E8F0] bg-white pl-8 pr-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
+                                        className="h-7 w-full rounded border border-[#E2E8F0] bg-white px-3 text-[10px] uppercase tracking-wider text-[#0F172A] placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9]"
                                     />
                                 </div>
                                 <button className="inline-flex items-center justify-center rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0F172A] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] dark:hover:text-white transition-colors">
