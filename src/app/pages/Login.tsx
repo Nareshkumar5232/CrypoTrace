@@ -13,6 +13,12 @@ export function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (localStorage.getItem('authUser')) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [navigate]);
+
+    useEffect(() => {
         const previousBodyOverflow = document.body.style.overflow;
         const previousHtmlOverflow = document.documentElement.style.overflow;
 
@@ -38,12 +44,12 @@ export function Login() {
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         if (!employeeId || !password) return;
-        setIsAuthenticating(true);
 
         login(
             { employeeId, password },
             {
                 navigateTo: false,
+                onSuccess: () => setIsAuthenticating(true),
                 onError: () => setIsAuthenticating(false),
             }
         );
@@ -125,7 +131,7 @@ export function Login() {
                                 value={employeeId}
                                 onChange={(e) => setEmployeeId(e.target.value)}
                                 className="flex h-10 w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white/80 dark:bg-slate-800/60 px-3 py-2 text-sm text-[#0F172A] dark:text-white placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#0F1623] dark:focus:border-[#00F4B9] transition-colors"
-                                placeholder="e.g. ID-0001"
+                                placeholder="e.g. admin@fiu.gov"
                             />
                         </div>
                         <div className="space-y-2">

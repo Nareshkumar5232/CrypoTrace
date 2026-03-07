@@ -22,12 +22,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     login: (token, user) => {
         localStorage.setItem('jwt_token', token);
         localStorage.setItem('user_data', JSON.stringify(user));
+        localStorage.setItem('authUser', 'true');
         set({ token, user });
     },
 
     logout: () => {
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('user_data');
+        localStorage.removeItem('authUser');
         set({ token: null, user: null });
     },
 

@@ -61,7 +61,7 @@ export const useLogin = () => {
             // Ignore backend auth errors here and allow the local fallback path.
         }
 
-        if (credentials.employeeId !== 'ID-0001' || credentials.password !== '1234') {
+        if (credentials.employeeId !== 'admin@fiu.gov' || credentials.password !== 'admin123') {
             toast.error('Authentication failed. Invalid credentials.');
             options?.onError?.();
             setIsPending(false);
@@ -71,7 +71,7 @@ export const useLogin = () => {
         const mockUser = {
             id: '1',
             employeeId: credentials.employeeId,
-            name: 'J. Smith',
+            name: 'Admin',
             role: 'Administrator' as const
         };
 
