@@ -14,10 +14,10 @@ export function RootLayout() {
 
     if (showSplash) {
         return (
-            <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0B1120]">
+            <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-background">
                 <img src={tnLogo} alt="Tamil Nadu State Logo" className="mb-8 w-32 animate-fade-in-up animate-stagger-2" />
-                <h1 className="mb-2 text-2xl font-bold uppercase tracking-widest text-white animate-fade-in-up animate-stagger-3">Crypto Intelligence System</h1>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#06B6D4] animate-fade-in animate-stagger-5">Initializing Secure Dashboard...</p>
+                <h1 className="mb-2 text-2xl font-bold uppercase tracking-widest text-foreground animate-fade-in-up animate-stagger-3">Crypto Intelligence System</h1>
+                <p className="text-xs font-bold uppercase tracking-widest text-navbar-accent animate-fade-in animate-stagger-5">Initializing Secure Dashboard...</p>
             </div>
         );
     }
@@ -25,7 +25,7 @@ export function RootLayout() {
     return (
         <div className="h-screen bg-background overflow-hidden">
             <Header />
-            <main className="mt-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden">
+            <main className="mt-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden bg-white dark:bg-background">
                 <motion.div
                     className="mx-auto w-full max-w-[1200px] p-8"
                     initial={{ opacity: 0, y: 24 }}

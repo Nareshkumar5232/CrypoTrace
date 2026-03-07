@@ -239,7 +239,7 @@ export function Dashboard() {
             </motion.div>
 
             {/* ── Suspicious Wallet Investigation Entry ── */}
-            <motion.div variants={fadeInUp} className="dash-card !p-0 overflow-hidden transition-smooth">
+            <motion.div variants={fadeInUp} className="dash-card hover-lift !p-0 overflow-hidden transition-smooth border-l-2 border-l-navbar-accent">
                 <div className="flex items-center gap-3 px-6 pt-5 pb-2">
                     <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center">
                         <Crosshair className="h-4.5 w-4.5 text-red-600 dark:text-red-400" />
@@ -454,7 +454,7 @@ export function Dashboard() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm table-rows-animate">
                         <thead>
                             <tr className="border-b border-border bg-muted/50">
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground tracking-wider">Case ID</th>
@@ -477,7 +477,7 @@ export function Dashboard() {
                             {!isLoading && recentCases.map((c: any) => (
                                 <tr
                                     key={c.id}
-                                    className="hover:bg-muted/30 transition-smooth-fast cursor-pointer table-row-hover"
+                                    className="hover:bg-muted/30 transition-smooth-fast cursor-pointer table-row-hover hover:translate-x-0.5"
                                     onClick={() => navigate(`/investigation/${encodeURIComponent(c.id)}`)}
                                 >
                                     <td className="px-6 py-3.5 font-mono text-xs text-muted-foreground">{c.id}</td>
@@ -494,13 +494,13 @@ export function Dashboard() {
             {/* ── Audit Activity Feed ── */}
             <motion.div className="dash-card transition-smooth" variants={fadeInUp}>
                 <h3 className="text-sm font-semibold text-foreground mb-5">System Audit Trail</h3>
-                <div className="space-y-4">
+                <div className="space-y-4 list-stagger">
                     {isLoading && <TnLoader text="Loading audit trail..." />}
                     {!isLoading && recentAuditLogs.length === 0 && (
                         <p className="text-sm text-muted-foreground text-center py-8">No recent activity</p>
                     )}
                     {!isLoading && recentAuditLogs.map((log: any, i: number) => (
-                        <div key={log.id} className="flex items-start gap-4 group">
+                        <div key={log.id} className="flex items-start gap-4 group transition-transform duration-200 hover:translate-x-1">
                             {/* Avatar */}
                             <div className="flex-shrink-0 h-9 w-9 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
                                 <User className="h-4 w-4" />

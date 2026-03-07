@@ -252,7 +252,7 @@
 
 /* Table row hover + enter animation */
 .table-row-hover {
-  transition: background-color 0.15s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 /* Table rows that animate in (use on tbody and nth-child on tr) */
